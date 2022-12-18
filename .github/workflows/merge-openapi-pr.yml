@@ -96,4 +96,4 @@ jobs:
           number: ${{ steps.get-merged-pull-request.outputs.number }}
           body: |
             New OpenAPI Snapshot Tag! :tada: \
-            [${{ steps.vars.outputs.next_version }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.vars.outputs.next_version }}) has been created.
+            [${{ steps.git-vars.outputs.new_version }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.git-vars.outputs.new_version }}) has been created.
