@@ -65,15 +65,15 @@ jobs:
 #        run: |
 #          cp ./development.env.template ./development.env
 #          docker-compose up -d db redis stripe
-#
-#      - name: Export OpenAPI Spec File
-#        run: yarn ts-node -r tsconfig-paths/register openapi-tools/openapi-spec.exporter.ts
+
+      - name: Export OpenAPI Spec File
+        run: yarn ts-node -r tsconfig-paths/register openapi-tools/openapi-spec.exporter.ts
 
       - name: OpenAPI Spec Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: openapi-specs
-          path: openapi-specs
+          name: openapi-spec
+          path: ${{ env.OPENAPI_FOLDER }}/v${{ env.CURRENT_VERSION }}-openapi.spec.json
 
       - name: Push Tag
         run: |
