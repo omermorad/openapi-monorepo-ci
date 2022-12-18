@@ -82,9 +82,9 @@ jobs:
           
           sh .github/upload-github-release-asset.sh \
           tag=${{ steps.git-vars.outputs.new_version }} \
-          owner=omermorad
-          repo=trytry
-          github_api_token=${{ secrets.GITHUB_TOKEN }}
+          owner=omermorad \
+          repo=trytry \
+          github_api_token=${{ secrets.GITHUB_TOKEN }} \
           filename="${{ env.OPENAPI_FOLDER }}/v${{ env.CURRENT_VERSION }}-openapi.spec.json"
 
 #      - name: Store OpenAPI Spec Artifact (S3)
