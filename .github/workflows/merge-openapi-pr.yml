@@ -76,7 +76,8 @@ jobs:
 
       - name: Push Tag
         run: |
-          git tag -a ${{ steps.git-vars.outputs.new_version }} -m "${{ steps.git-vars.outputs.new_version }}: PR #${{ steps.get-merged-pull-request.outputs.number }} ${{ steps.get-merged-pull-request.outputs.title }}"
+          git tag -a "${{ steps.git-vars.outputs.new_version }}" \
+          -m "${{ steps.git-vars.outputs.new_version }}: PR #${{ steps.get-merged-pull-request.outputs.number }} ${{ steps.get-merged-pull-request.outputs.title }}"
           git push --tags origin "${{ steps.git-vars.outputs.new_version }}"
 
 #      - name: Store OpenAPI Spec Artifact (S3)
