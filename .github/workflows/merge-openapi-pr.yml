@@ -61,11 +61,11 @@ jobs:
 #        run: yarn auth
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#      - name: Yarn Install
-#        run: |
-#          yarn install --frozen-lockfile
-#          yarn add -D rdme
+
+      - name: Yarn Install
+        run: |
+          yarn install --frozen-lockfile
+          yarn add -D rdme
 
 #      - name: Create Env
 #        run: |
