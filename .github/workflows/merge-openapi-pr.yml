@@ -78,13 +78,6 @@ jobs:
         run: |
           git tag -a ${{ steps.git-vars.outputs.new_version }} -m "${{ steps.git-vars.outputs.new_version }}: PR #${{ steps.get-merged-pull-request.outputs.number }} ${{ steps.get-merged-pull-request.outputs.title }}"
           git push --tags origin "${{ steps.git-vars.outputs.new_version }}"
-          
-          sh .github/upload-github-release-asset.sh \
-          tag=${{ steps.git-vars.outputs.new_version }} \
-          owner=omermorad \
-          repo=trytry \
-          github_api_token=${{ secrets.GITHUB_TOKEN }} \
-          filename="${{ env.OPENAPI_FOLDER }}/v${{ env.CURRENT_VERSION }}-openapi.spec.json"
 
 #      - name: Store OpenAPI Spec Artifact (S3)
 #        uses: jakejarvis/s3-sync-action@master
