@@ -107,5 +107,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: openapi-spec
-          path: v${{ env.OPENAPI_FOLDER }}/${{ env.CURRENT_VERSION }}-openapi.spec.json
+          path: ${{ env.OPENAPI_FOLDER }}/v${{ env.CURRENT_VERSION }}-openapi.spec.json
           if-no-files-found: error
