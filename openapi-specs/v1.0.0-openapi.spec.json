@@ -1,1 +1,399 @@
-{}
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/qualification/{buyerId}/preApproval": {
+      "post": {
+        "operationId": "QualificationOpenAPIController_updateQualificationDataVer1_0_1",
+        "parameters": [
+          {
+            "name": "buyerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualificationPreApprovalSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "The API key is not valid"
+          }
+        },
+        "tags": [
+          "Qualification"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
+    "/settings": {
+      "get": {
+        "operationId": "SettingsController_getSettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "SettingsController_updateSettings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMerchantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      }
+    },
+    "/settings/{merchantId}": {
+      "put": {
+        "operationId": "SettingsController_updateSettingsAsAdmin",
+        "parameters": [
+          {
+            "name": "merchantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternalUpdateMerchantSettingsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      }
+    },
+    "/settings/bank": {
+      "get": {
+        "operationId": "SettingsController_getBankAccount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "SettingsController_updateBankAccount",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BankAccountDetails"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      }
+    },
+    "/settings/tenant": {
+      "get": {
+        "operationId": "SettingsController_getTenantMetadata",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Balance OpenAPI",
+    "description": "",
+    "version": "1.0.1",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "https://api.sandbox.getbalance.com",
+      "description": "sandbox"
+    },
+    {
+      "url": "https://api.getbalance.com",
+      "description": "production"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "PreApprovalAddressInfoSchema": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "zipCode": {
+            "type": "string"
+          },
+          "address1": {
+            "type": "string"
+          },
+          "address2": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "state",
+          "city",
+          "zipCode",
+          "address1",
+          "country"
+        ]
+      },
+      "PreApprovalInfoSchema": {
+        "type": "object",
+        "properties": {
+          "businessAddress": {
+            "$ref": "#/components/schemas/PreApprovalAddressInfoSchema"
+          },
+          "ein": {
+            "type": "string"
+          },
+          "businessName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "businessAddress",
+          "ein",
+          "businessName"
+        ]
+      },
+      "QualificationPreApprovalSchema": {
+        "type": "object",
+        "properties": {
+          "businessAddress": {
+            "$ref": "#/components/schemas/PreApprovalAddressInfoSchema"
+          },
+          "ein": {
+            "type": "string"
+          },
+          "businessName": {
+            "type": "string"
+          },
+          "The request amount for the qualification pre-approval": {
+            "type": "number",
+            "example": 1000,
+            "description": "Qualification requested amount"
+          }
+        },
+        "required": [
+          "businessAddress",
+          "ein",
+          "businessName"
+        ]
+      },
+      "DashboardSettingsRequest": {
+        "type": "object",
+        "properties": {
+          "defaultPaymentMethods": {
+            "type": "object"
+          }
+        }
+      },
+      "UpdateMerchantRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "logo": {
+            "type": "string"
+          },
+          "logoType": {
+            "type": "string"
+          },
+          "takeRate": {
+            "type": "object"
+          },
+          "dashboardSettings": {
+            "$ref": "#/components/schemas/DashboardSettingsRequest"
+          },
+          "primaryColor": {
+            "type": "string"
+          },
+          "secondaryColor": {
+            "type": "string"
+          },
+          "statementDescriptor": {
+            "type": "string"
+          }
+        }
+      },
+      "InternalUpdateMerchantSettingsRequest": {
+        "type": "object",
+        "properties": {
+          "primaryColor": {
+            "type": "string"
+          },
+          "secondaryColor": {
+            "type": "string"
+          },
+          "feesOnVendor": {
+            "type": "boolean"
+          },
+          "ccAuthAutoRenewal": {
+            "type": "boolean"
+          },
+          "addTransactionNoteToStatements": {
+            "type": "boolean"
+          },
+          "useInHouseTerms": {
+            "type": "boolean"
+          },
+          "qualificationWithPlaid": {
+            "type": "boolean"
+          },
+          "statementDescriptor": {
+            "type": "string"
+          },
+          "qualificationType": {
+            "type": "string"
+          },
+          "paymentEmails": {
+            "type": "boolean"
+          },
+          "qualificationAppDenyCreditBureau": {
+            "type": "boolean"
+          },
+          "invoicePageConfiguration": {
+            "type": "object"
+          },
+          "instantACH": {
+            "type": "object"
+          },
+          "maximumNegativeBalance": {
+            "type": "object"
+          },
+          "emailConfig": {
+            "type": "object"
+          },
+          "dashboardSettings": {
+            "$ref": "#/components/schemas/DashboardSettingsRequest"
+          },
+          "buyerSettings": {
+            "type": "object"
+          }
+        }
+      },
+      "BankAccountDetails": {
+        "type": "object",
+        "properties": {
+          "routingNumber": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "routingNumber"
+        ]
+      }
+    }
+  }
+}
