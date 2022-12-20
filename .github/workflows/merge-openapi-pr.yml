@@ -6,8 +6,7 @@ env:
   NODE_ENV: 'development'
   APPLICATION_MODE: 'api'
   OPENAPI_FOLDER: 'openapi-specs'
-  CURRENT_VERSION: '1.0.0'
-  NEXT_VERSION: '1.1.0'
+  NEXT_VERSION: '1.0.0'
 
 on:
   push:
@@ -32,7 +31,7 @@ jobs:
         id: git-vars
         run: |
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "new_version=openapi@v${{ env.NEXT_VERSION }}-next.$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "next_version=openapi@v${{ env.NEXT_VERSION }}-next.$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
 #      - name: Configure AWS Credentials
 #        uses: aws-actions/configure-aws-credentials@v1
@@ -65,20 +64,20 @@ jobs:
 #          cp ./development.env.template ./development.env
 #          docker-compose up -d db redis stripe
 
-      - name: Export OpenAPI Spec File
-        run: yarn ts-node -r tsconfig-paths/register openapi-tools/openapi-spec.exporter.ts
-
-      - name: OpenAPI Spec Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: openapi-spec
-          path: ${{ env.OPENAPI_FOLDER }}/v${{ env.CURRENT_VERSION }}-openapi.spec.json
+#      - name: Export OpenAPI Spec File
+#        run: yarn ts-node -r tsconfig-paths/register openapi-tools/openapi-spec.exporter.ts
+#
+#      - name: OpenAPI Spec Artifact
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: openapi-spec
+#          path: ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json
 
       - name: Push Tag
         run: |
-          git tag -a "${{ steps.git-vars.outputs.new_version }}" \
+          git tag -a "${{ steps.git-vars.outputs.next_version }}" \
           -m "PR #${{ steps.get-merged-pull-request.outputs.number }} ${{ steps.get-merged-pull-request.outputs.title }}"
-          git push --tags origin "${{ steps.git-vars.outputs.new_version }}"
+          git push --tags origin "${{ steps.git-vars.outputs.next_version }}"
 
 #      - name: Store OpenAPI Spec Artifact (S3)
 #        uses: jakejarvis/s3-sync-action@master
@@ -96,10 +95,21 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.get-merged-pull-request.outputs.number }}
           body: |
-            New OpenAPI Snapshot Tag! :tada: \
-            [${{ steps.git-vars.outputs.new_version }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.git-vars.outputs.new_version }}) has been created.
+            New Checkout API Snapshot Tag! :tada: \
+            [${{ steps.git-vars.outputs.next_version }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.git-vars.outputs.next_version }}) has been created.
 
-      - name: Create Readme.io Preview
+      - name: Readme.io - Create Version
         run: |
-          yarn rdme versions:create ${{ steps.git-vars.outputs.new_version }} --main=false --beta=false --isPublic=false
-          yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ env.CURRENT_VERSION }}-openapi.spec.json --version=${{ steps.git-vars.outputs.new_version }}
+          yarn rdme versions:create ${{ github.event.inputs.next_version }} \
+          --main=false \
+          --beta=false \
+          --isPublic=false \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --codename=v${{ github.event.inputs.next_version }} \
+
+      - name: Readme.io - Sync OpenAPI Spec
+        run: |
+          yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json \
+          --version=${{ github.event.inputs.next_version }} \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --create
