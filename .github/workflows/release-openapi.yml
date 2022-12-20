@@ -67,11 +67,11 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          body_path: CHANGELOG.md
+          generate_release_notes: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          draft: true
-          name: Balance OpenAPI v${{ github.event.inputs.new_version }}
-          tag: ${{ steps.git-vars.outputs.new_version }}
+          draft: false
+          name: Balance Checkout API v${{ github.event.inputs.new_version }}
+          tag_name: ${{ steps.git-vars.outputs.new_version }}
           target_commitish: master
           files: ${{ env.OPENAPI_FOLDER }}/v${{ github.event.inputs.new_version }}-openapi.spec.json
         env:
