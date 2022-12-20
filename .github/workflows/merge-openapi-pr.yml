@@ -31,7 +31,8 @@ jobs:
         id: git-vars
         run: |
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "next_version=openapi@v${{ env.NEXT_VERSION }}-next.$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "next_version_tag=openapi@v${{ env.NEXT_VERSION }}-next.$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "next_version=${{ env.NEXT_VERSION }}-next.$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
 #      - name: Configure AWS Credentials
 #        uses: aws-actions/configure-aws-credentials@v1
@@ -75,9 +76,9 @@ jobs:
 
       - name: Push Tag
         run: |
-          git tag -a "${{ steps.git-vars.outputs.next_version }}" \
+          git tag -a "${{ steps.git-vars.outputs.next_version_tag }}" \
           -m "PR #${{ steps.get-merged-pull-request.outputs.number }} ${{ steps.get-merged-pull-request.outputs.title }}"
-          git push --tags origin "${{ steps.git-vars.outputs.next_version }}"
+          git push --tags origin "${{ steps.git-vars.outputs.next_version_tag }}"
 
 #      - name: Store OpenAPI Spec Artifact (S3)
 #        uses: jakejarvis/s3-sync-action@master
@@ -87,7 +88,7 @@ jobs:
 #          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
 #          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 #          SOURCE_DIR: 'openapi-specs'
-#          DEST_DIR: ${{ steps.vars.outputs.next_version }}
+#          DEST_DIR: ${{ steps.vars.outputs.next_version_tag }}
 
       - name: Create PR Comment
         uses: actions-ecosystem/action-create-comment@v1
@@ -96,11 +97,11 @@ jobs:
           number: ${{ steps.get-merged-pull-request.outputs.number }}
           body: |
             New Checkout API Snapshot Tag! :tada: \
-            [${{ steps.git-vars.outputs.next_version }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.git-vars.outputs.next_version }}) has been created.
+            [${{ steps.git-vars.outputs.next_version_tag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.git-vars.outputs.next_version_tag }}) has been created.
 
       - name: Readme.io - Create Version
         run: |
-          yarn rdme versions:create ${{ github.event.inputs.next_version }} \
+          yarn rdme versions:create ${{ steps.git-vars.outputs.next_version }} \
           --main=false \
           --beta=false \
           --isPublic=false \
@@ -110,6 +111,6 @@ jobs:
       - name: Readme.io - Sync OpenAPI Spec
         run: |
           yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json \
-          --version=${{ github.event.inputs.next_version }} \
+          --version=${{ steps.git-vars.outputs.next_version }} \
           --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
           --create
