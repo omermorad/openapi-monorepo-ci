@@ -1,0 +1,105 @@
+name: OpenAPI Next Prerelease
+
+env:
+  FRONTEGG_CLIENT_ID: ${{ secrets.FRONTEGG_CLIENT_ID_DEV }}
+  FRONTEGG_API_KEY: ${{ secrets.FRONTEGG_API_KEY_DEV }}
+  NODE_ENV: 'development'
+  APPLICATION_MODE: 'api'
+  OPENAPI_FOLDER: 'openapi-specs'
+  CURRENT_VERSION: '1.0.0'
+  NEXT_VERSION: '1.1.0'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  mark-awaiting-trigger:
+    name: Check OpenAPI Changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions-ecosystem/action-get-merged-pull-request@v1
+        id: get-merged-pull-request
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Git Vars
+        id: git-vars
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "new_version=openapi@v${{ env.NEXT_VERSION }}-next.$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+#      - name: Configure AWS Credentials
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id: ${{ secrets.DEV_AWS_SECRET_ID }}
+#          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Config Git User
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+#      - uses: actions/setup-node@v3
+#        with:
+#          cache: 'yarn'
+#
+#      - name: 'Authenticate with GitHub Packages'
+#        run: yarn auth
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Yarn Install
+        run: |
+          yarn install --frozen-lockfile
+          yarn add -D rdme
+
+#      - name: Create Env
+#        run: |
+#          cp ./development.env.template ./development.env
+#          docker-compose up -d db redis stripe
+
+      - name: Export OpenAPI Spec File
+        run: yarn ts-node -r tsconfig-paths/register openapi-tools/openapi-spec.exporter.ts
+
+      - name: OpenAPI Spec Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: openapi-spec
+          path: ${{ env.OPENAPI_FOLDER }}/v${{ env.CURRENT_VERSION }}-openapi.spec.json
+
+      - name: Push Tag
+        run: |
+          git tag -a "${{ steps.git-vars.outputs.new_version }}" \
+          -m "PR #${{ steps.get-merged-pull-request.outputs.number }} ${{ steps.get-merged-pull-request.outputs.title }}"
+          git push --tags origin "${{ steps.git-vars.outputs.new_version }}"
+
+#      - name: Store OpenAPI Spec Artifact (S3)
+#        uses: jakejarvis/s3-sync-action@master
+#        env:
+#          AWS_S3_BUCKET: 'openapi-spec-artifacts'
+#          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_SECRET_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+#          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+#          SOURCE_DIR: 'openapi-specs'
+#          DEST_DIR: ${{ steps.vars.outputs.next_version }}
+
+      - name: Create PR Comment
+        uses: actions-ecosystem/action-create-comment@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ steps.get-merged-pull-request.outputs.number }}
+          body: |
+            New OpenAPI Snapshot Tag! :tada: \
+            [${{ steps.git-vars.outputs.new_version }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.git-vars.outputs.new_version }}) has been created.
+
+      - name: Create Readme.io Preview
+        run: |
+          yarn rdme versions:create ${{ steps.git-vars.outputs.new_version }} --main=false --beta=false --isPublic=false
+          yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ env.CURRENT_VERSION }}-openapi.spec.json --version=${{ steps.git-vars.outputs.new_version }}
