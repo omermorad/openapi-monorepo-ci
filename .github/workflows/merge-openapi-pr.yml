@@ -106,11 +106,12 @@ jobs:
           --beta=false \
           --isPublic=false \
           --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
-          --codename=v${{ steps.git-vars.outputs.next_version }}
+          --codename=v${{ steps.git-vars.outputs.next_version }} \
+          --fork=${{ env.NEXT_VERSION }}
 
       - name: Readme.io - Sync OpenAPI Spec
         run: |
           yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json \
           --version=${{ steps.git-vars.outputs.next_version }} \
           --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
-          --create
+          --update
