@@ -58,21 +58,21 @@ jobs:
           git commit CHANGELOG.md -m "chore: update openapi changelog [skip ci]"
           git push origin master
 
-#      - name: Release
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          body: ${{ steps.changelog.outputs.changelog }}
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          draft: true
-#          name: Balance OpenAPI v${{ github.event.inputs.new_version }}
-#          tag: openapi@v${{ github.event.inputs.new_version }}
-#          target_commitish: master
-#          files: ${{ env.OPENAPI_FOLDER }}/v${{ env.CURRENT_VERSION }}-openapi.spec.json
-#        env:
-#          GITHUB_REPOSITORY: omermorad/trytry
-
       - name: Push Tag
         run: |
           git tag -a "${{ steps.git-vars.outputs.new_version }}" \
           -m "Stable Version of Balance OpenAPI :tada:"
           git push --tags origin "${{ steps.git-vars.outputs.new_version }}"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: CHANGELOG.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+          name: Balance OpenAPI v${{ github.event.inputs.new_version }}
+          tag: ${{ steps.git-vars.outputs.new_version }}
+          target_commitish: master
+          files: ${{ env.OPENAPI_FOLDER }}/v${{ github.event.inputs.new_version }}-openapi.spec.json
+        env:
+          GITHUB_REPOSITORY: omermorad/trytry
