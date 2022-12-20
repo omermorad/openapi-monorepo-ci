@@ -104,12 +104,12 @@ jobs:
           --main=false \
           --beta=false \
           --isPublic=false \
-          --key=${{ secrets.READMEIO_API_KEY }} \
+          --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
           --codename=v${{ github.event.inputs.next_version }} \
 
       - name: Readme.io - Sync OpenAPI Spec
         run: |
           yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json \
           --version=${{ github.event.inputs.next_version }} \
-          --key=${{ secrets.READMEIO_API_KEY }} \
+          --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
           --create
