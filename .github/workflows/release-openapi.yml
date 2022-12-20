@@ -46,7 +46,7 @@ jobs:
       - name: Create Changelog
         run: |
           yarn conventional-changelog -a \
-          -t openapi
+          -t openapi \
           -p angular \
           --commit-path ./src/balance-openapi \
           -o CHANGELOG.md \
