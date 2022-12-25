@@ -1,0 +1,20 @@
+{
+  "name": "@omermorad/openapi.spec",
+  "version": "1.0.0",
+  "private": false,
+  "scripts": {
+    "prebuild": "yarn rimraf dist",
+    "build": "ts-node -r tsconfig-paths/register ./openapi-spec.exporter.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omermorad/trytry.git"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist/**/*.json"
+  ],
+  "devDependencies": {
+    "@omermorad/openapi.types": "^1.0.0"
+  }
+}

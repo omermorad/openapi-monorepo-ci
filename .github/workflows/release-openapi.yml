@@ -1,0 +1,78 @@
+name: Release OpenAPI Stable Version
+
+env:
+  FRONTEGG_CLIENT_ID: ${{ secrets.FRONTEGG_CLIENT_ID_DEV }}
+  FRONTEGG_API_KEY: ${{ secrets.FRONTEGG_API_KEY_DEV }}
+  NODE_ENV: 'development'
+  APPLICATION_MODE: 'api'
+  OPENAPI_FOLDER: 'openapi-specs'
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_version:
+        type: string
+        required: true
+        description: New Version to Apply (e.g. "1.2.0")
+      fork_version:
+        type: string
+        required: true
+        description: Fork from Version (e.g. "1.1.0")
+
+jobs:
+  export-openapi-spec:
+    name: Export OpenAPI Spec
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Yarn
+        run: yarn install --frozen-lockfile
+
+      - name: Config Git User
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Get Git Vars
+        id: git-vars
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "new_version=openapi@v${{ github.event.inputs.new_version }}" >> $GITHUB_OUTPUT
+
+      - name: Create Changelog
+        run: |
+          yarn conventional-changelog -a \
+          -t openapi \
+          -p angular \
+          --commit-path ./src/balance-openapi \
+          -o CHANGELOG.md \
+          -i CHANGELOG.md
+
+      - name: Commit Changelog
+        run: |
+          git add CHANGELOG.md
+          git commit CHANGELOG.md -m "chore: update openapi changelog [skip ci]"
+          git push origin master
+
+      - name: Push Tag
+        run: |
+          git tag -a "${{ steps.git-vars.outputs.new_version }}" \
+          -m "Stable Version of Balance OpenAPI :tada:"
+          git push --tags origin "${{ steps.git-vars.outputs.new_version }}"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          name: Balance Checkout API v${{ github.event.inputs.new_version }}
+          tag_name: ${{ steps.git-vars.outputs.new_version }}
+          target_commitish: master
+          files: ${{ env.OPENAPI_FOLDER }}/v${{ github.event.inputs.new_version }}-openapi.spec.json
+        env:
+          GITHUB_REPOSITORY: omermorad/trytry

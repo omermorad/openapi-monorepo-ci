@@ -1,0 +1,25 @@
+{
+  "name": "@omermorad/openapi.types",
+  "version": "1.0.0",
+  "private": false,
+  "types": "./index.d.ts",
+  "author": "Balance Engineering",
+  "description": "Balance OpenAPI request/response types",
+  "scripts": {
+    "prebuild": "yarn rimraf dist",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omermorad/trytry.git"
+  },
+  "files": [
+    "index.d.ts",
+    "src/**/*.d.ts",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
