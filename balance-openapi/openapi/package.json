@@ -2,6 +2,7 @@
   "name": "@omermorad/openapi.spec",
   "version": "1.0.0",
   "private": false,
+  "license": "unlicense",
   "scripts": {
     "prebuild": "yarn rimraf dist",
     "build": "ts-node -r tsconfig-paths/register ./openapi-spec.exporter.ts"

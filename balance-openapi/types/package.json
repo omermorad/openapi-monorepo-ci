@@ -2,6 +2,7 @@
   "name": "@omermorad/openapi.types",
   "version": "1.0.0",
   "private": false,
+  "license": "unlicense",
   "types": "./index.d.ts",
   "author": "Balance Engineering",
   "description": "Balance OpenAPI request/response types",
