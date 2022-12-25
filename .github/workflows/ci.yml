@@ -1,0 +1,109 @@
+name: Continuous Integration
+env:
+  FRONTEGG_CLIENT_ID: ${{ secrets.FRONTEGG_CLIENT_ID_DEV }}
+  FRONTEGG_API_KEY: ${{ secrets.FRONTEGG_API_KEY_DEV }}
+  NODE_ENV: 'development'
+  APPLICATION_MODE: 'api'
+  OPENAPI_FOLDER: 'openapi-specs'
+  CURRENT_VERSION: '1.0.0'
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  detect-changes:
+    name: Detect OpenAPI Changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files in openapi folder
+        id: openapi-changes
+        uses: tj-actions/changed-files@v34
+        with:
+          files: |
+            balance-openapi/**/*.ts
+    outputs:
+      changed: ${{ steps.openapi-changes.outputs.any_changed }}
+
+  label-pr:
+    name: Label PR
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: OpenAPI
+
+  validate-title:
+    name: Validate PR Title
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            fix
+            feat
+            refactor
+          scopes: |
+            openapi.types
+            openapi.spec
+          requireScope: true
+
+  openapi-spec:
+    name: OpenAPI Spec Release Candidate
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      FRONTEGG_CLIENT_ID: ${{ secrets.FRONTEGG_CLIENT_ID_DEV }}
+      FRONTEGG_API_KEY: ${{ secrets.FRONTEGG_API_KEY_DEV }}
+      NODE_ENV: 'development'
+      APPLICATION_MODE: 'api'
+      OPENAPI_FOLDER: 'openapi-specs'
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AWS_SECRET_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - name: 'Authenticate with GitHub Packages'
+        run: yarn auth
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Yarn
+        run: |
+          yarn install --frozen-lockfile
+          yarn
+          lerna bootstrap --ci
+
+      - name: Create Env
+        run: |
+          cp ./development.env.template ./development.env
+          docker-compose up -d db redis stripe
+
+      - name: Build
+        run: yarn lerna run build
+
+      - name: Canary
+        run: lerna publish --yes --canary --preid dev --dist-tag dev
