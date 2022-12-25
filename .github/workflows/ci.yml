@@ -72,7 +72,7 @@ jobs:
 
   canary-release:
     name: OpenAPI Canary Release
-    needs: detect-changes
+    needs: [detect-changes, check_skip_flags]
     if: ${{ contains(needs.check_skip_flags.outputs.head-commit-message, '[canary]') }}
     runs-on: ubuntu-latest
     env:
