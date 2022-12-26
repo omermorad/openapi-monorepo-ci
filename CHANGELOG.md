@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0-next.1](https://github.com/omermorad/trytry/compare/v1.1.0-next.0...v1.1.0-next.1) (2022-12-26)
+
+
+### Features
+
+* **openapi.spec:** zimbardo the man [canary] ([#25](https://github.com/omermorad/trytry/issues/25)) ([273181d](https://github.com/omermorad/trytry/commit/273181d945292d201810de3326078609803689f8))
+* **openapi.spec:** zimbardo the man [skip ci] ([#23](https://github.com/omermorad/trytry/issues/23)) ([1b9543b](https://github.com/omermorad/trytry/commit/1b9543b39916c4f7c7401ee3c2a0878a25e5d2cf))
+
+
+
+
+
 # 1.1.0-next.0 (2022-12-26)
 
 
