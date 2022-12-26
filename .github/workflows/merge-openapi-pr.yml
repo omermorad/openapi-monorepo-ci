@@ -55,7 +55,6 @@ jobs:
       - name: Yarn Install
         run: |
           yarn install --frozen-lockfile
-          yarn add -W -D rdme
           yarn
           lerna bootstrap --ci
 

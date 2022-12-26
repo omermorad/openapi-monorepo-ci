@@ -13,6 +13,7 @@
     "@types/node": "16.x.x",
     "conventional-changelog-cli": "^2.2.2",
     "lerna": "^6.1.0",
+    "rdme": "^8.4.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.1",
