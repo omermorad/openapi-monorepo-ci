@@ -2,7 +2,7 @@
   "name": "@omermorad/openapi.spec",
   "version": "1.1.0-next.1",
   "private": false,
-  "license": "unlicense",
+  "license": "UNLICENSED",
   "scripts": {
     "prebuild": "yarn rimraf dist",
     "build": "ts-node -r tsconfig-paths/register ./openapi-spec.exporter.ts"
@@ -16,5 +16,8 @@
   ],
   "devDependencies": {
     "@omermorad/openapi.types": "^1.1.0-next.1"
+  },
+  "publishConfig": {
+    "@omermorad:registry": "https://npm.pkg.github.com/omermorad"
   }
 }
