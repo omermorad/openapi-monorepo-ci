@@ -1,6 +1,6 @@
 {
   "name": "@omermorad/openapi.spec",
-  "version": "1.0.0",
+  "version": "1.1.0-next.0",
   "private": false,
   "license": "unlicense",
   "scripts": {
@@ -16,6 +16,6 @@
     "dist/**/*.json"
   ],
   "devDependencies": {
-    "@omermorad/openapi.types": "^1.0.0"
+    "@omermorad/openapi.types": "^1.1.0-next.0"
   }
 }
