@@ -17,8 +17,7 @@
   "files": [
     "index.d.ts",
     "src/**/*.d.ts",
-    "README.md",
-    "CHANGELOG.md"
+    "README.md"
   ],
   "publishConfig": {
     "access": "restricted"
