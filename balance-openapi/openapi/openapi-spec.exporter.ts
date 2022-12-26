@@ -7,16 +7,17 @@ type BalanceApiVersions = Record<'V1' | 'V1_0_1', string>;
 
 export const OpenApiVersion: BalanceApiVersions = {
   V1: '1.0.0',
-  V1_0_1: '1.0.1',
+  V1_0_1: '1.1.0',
 };
 
 export type OpenApiVersion = typeof OpenApiVersion[keyof typeof OpenApiVersion];
 
-
 const FOLDER_NAME = 'dist';
 
 async function createApiSpecFile(version: string) {
-  if (!Object.values(OpenApiVersion).includes(version)) {
+  const [baseVersion] = version.split('-');
+
+  if (!Object.values(OpenApiVersion).includes(baseVersion)) {
     console.error(
       'Invalid version number for OpenAPI spec file, allowed versions are:',
       Object.values(OpenApiVersion).join(', '),
