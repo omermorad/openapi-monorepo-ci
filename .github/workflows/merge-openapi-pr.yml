@@ -85,7 +85,7 @@ jobs:
       - name: Version Packages
         run: |
           yarn lerna version --yes --preid next --conventional-commits --conventional-prerelease
-          yarn lerna publish --preid next from-package --dist-tag next
+          yarn lerna publish --preid next from-package --dist-tag next --yes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
