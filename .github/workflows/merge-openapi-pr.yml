@@ -6,7 +6,6 @@ env:
   NODE_ENV: 'development'
   APPLICATION_MODE: 'api'
   OPENAPI_FOLDER: 'openapi-specs'
-  NEXT_VERSION: '1.0.0'
 
 on:
   push:
@@ -26,13 +25,6 @@ jobs:
         id: get-merged-pull-request
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get Git Vars
-        id: git-vars
-        run: |
-          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "next_version_tag=openapi@v${{ env.NEXT_VERSION }}-next.$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "next_version=${{ env.NEXT_VERSION }}-next.$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
 #      - name: Configure AWS Credentials
 #        uses: aws-actions/configure-aws-credentials@v1
@@ -55,10 +47,17 @@ jobs:
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 'Authenticate with GitHub Packages'
+        run: yarn auth
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Yarn Install
         run: |
           yarn install --frozen-lockfile
           yarn add -D rdme
+          yarn
+          lerna bootstrap --ci
 
 #      - name: Create Env
 #        run: |
@@ -74,11 +73,11 @@ jobs:
 #          name: openapi-spec
 #          path: ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json
 
-      - name: Push Tag
-        run: |
-          git tag -a "${{ steps.git-vars.outputs.next_version_tag }}" \
-          -m "PR #${{ steps.get-merged-pull-request.outputs.number }} ${{ steps.get-merged-pull-request.outputs.title }}"
-          git push --tags origin "${{ steps.git-vars.outputs.next_version_tag }}"
+#      - name: Push Tag
+#        run: |
+#          git tag -a "${{ steps.git-vars.outputs.next_version_tag }}" \
+#          -m "PR #${{ steps.get-merged-pull-request.outputs.number }} ${{ steps.get-merged-pull-request.outputs.title }}"
+#          git push --tags origin "${{ steps.git-vars.outputs.next_version_tag }}"
 
 #      - name: Store OpenAPI Spec Artifact (S3)
 #        uses: jakejarvis/s3-sync-action@master
@@ -89,6 +88,16 @@ jobs:
 #          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 #          SOURCE_DIR: 'openapi-specs'
 #          DEST_DIR: ${{ steps.vars.outputs.next_version_tag }}
+
+      - name: Version Packages
+        run: yarn lerna version --yes --preid next --conventional-commits --conventional-prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Git Vars
+        id: git-vars
+        run: |
+          echo "next_version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
 
       - name: Create PR Comment
         uses: actions-ecosystem/action-create-comment@v1
