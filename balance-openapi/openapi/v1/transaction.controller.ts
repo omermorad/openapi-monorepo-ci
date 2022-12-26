@@ -1,1 +1,1 @@
-export class TransactionController {}
+export class TransactionController2 {}
