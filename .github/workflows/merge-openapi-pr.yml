@@ -65,12 +65,6 @@ jobs:
 
 #      - name: Export OpenAPI Spec File
 #        run: yarn ts-node -r tsconfig-paths/register openapi-tools/openapi-spec.exporter.ts
-#
-#      - name: OpenAPI Spec Artifact
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: openapi-spec
-#          path: ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json
 
 #      - name: Push Tag
 #        run: |
@@ -89,7 +83,9 @@ jobs:
 #          DEST_DIR: ${{ steps.vars.outputs.next_version_tag }}
 
       - name: Version Packages
-        run: yarn lerna version --yes --preid next --conventional-commits --conventional-prerelease
+        run: |
+          yarn lerna version --yes --preid next --conventional-commits --conventional-prerelease
+          yarn lerna publish --preid next from-package --dist-tag next
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -104,22 +100,22 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.get-merged-pull-request.outputs.number }}
           body: |
-            New Checkout API Snapshot Tag! :tada: \
-            [${{ steps.git-vars.outputs.next_version_tag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.git-vars.outputs.next_version_tag }}) has been created.
+            :package: This pull request produced a new OpenAPI version - ${{ steps.git-vars.outputs.next_version }}
+            You can find it under the repostiory tags
 
-      - name: Readme.io - Create Version
-        run: |
-          yarn rdme versions:create ${{ steps.git-vars.outputs.next_version }} \
-          --main=false \
-          --beta=false \
-          --isPublic=false \
-          --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
-          --codename=v${{ steps.git-vars.outputs.next_version }} \
-          --fork=${{ env.NEXT_VERSION }}
-
-      - name: Readme.io - Sync OpenAPI Spec
-        run: |
-          yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json \
-          --version=${{ steps.git-vars.outputs.next_version }} \
-          --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
-          --update
+#      - name: Readme.io - Create Version
+#        run: |
+#          yarn rdme versions:create ${{ steps.git-vars.outputs.next_version }} \
+#          --main=false \
+#          --beta=false \
+#          --isPublic=false \
+#          --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
+#          --codename=v${{ steps.git-vars.outputs.next_version }} \
+#          --fork=${{ env.NEXT_VERSION }}
+#
+#      - name: Readme.io - Sync OpenAPI Spec
+#        run: |
+#          yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json \
+#          --version=${{ steps.git-vars.outputs.next_version }} \
+#          --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
+#          --update
