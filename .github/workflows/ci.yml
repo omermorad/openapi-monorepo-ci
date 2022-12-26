@@ -114,4 +114,4 @@ jobs:
         run: yarn lerna run build
 
       - name: Canary
-        run: lerna publish --yes --canary preminor --preid dev --dist-tag dev
+        run: yarn run publish --force-publish --canary --preid $(git rev-parse HEAD) --yes --dist-tag dev
