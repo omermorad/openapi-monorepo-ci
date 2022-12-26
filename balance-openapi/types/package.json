@@ -2,7 +2,7 @@
   "name": "@omermorad/openapi.types",
   "version": "1.1.0-next.1",
   "private": false,
-  "license": "unlicense",
+  "license": "UNLICENSED",
   "types": "./index.d.ts",
   "author": "Balance Engineering",
   "description": "Balance OpenAPI request/response types",
@@ -20,6 +20,6 @@
     "README.md"
   ],
   "publishConfig": {
-    "access": "restricted"
+    "@omermorad:registry": "https://npm.pkg.github.com/omermorad"
   }
 }
