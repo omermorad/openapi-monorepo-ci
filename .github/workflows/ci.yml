@@ -105,11 +105,6 @@ jobs:
           yarn
           lerna bootstrap --ci
 
-#      - name: Create Env
-#        run: |
-#          cp ./development.env.template ./development.env
-#          docker-compose up -d db redis stripe
-
       - name: Build
         run: yarn lerna run build
 
