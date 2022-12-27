@@ -82,10 +82,18 @@ jobs:
 #          SOURCE_DIR: 'openapi-specs'
 #          DEST_DIR: ${{ steps.vars.outputs.next_version_tag }}
 
-      - name: Version Packages
+      - name: Git Vars
+        id: git-vars
         run: |
-          yarn lerna version --yes --preid next --conventional-commits --conventional-prerelease
-          yarn lerna publish --preid next from-package --dist-tag next --yes
+          echo "prev_version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
+
+      - name: Version Packages
+        run: yarn lerna version --yes --preid next --conventional-commits --conventional-prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Packages
+        run: yarn lerna publish --preid next from-package --dist-tag next --yes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -100,8 +108,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.get-merged-pull-request.outputs.number }}
           body: |
-            :package: This pull request produced a new OpenAPI version - ${{ steps.git-vars.outputs.next_version }}
-            You can find it under the repostiory tags
+            New OpenAPI Version :tada: \
+            [${{ steps.git-vars.outputs.next_version }}](https://github.com/${{ github.repository }}/releases/tag/v${{ steps.git-vars.outputs.next_version }}) has been created.
 
       - name: Readme.io - Create Version
         run: |
@@ -111,11 +119,14 @@ jobs:
           --isPublic=false \
           --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
           --codename=v${{ steps.git-vars.outputs.next_version }} \
-          --fork=${{ env.NEXT_VERSION }}
+          --fork=${{ steps.git-vars.outputs.prev_version }}
 
       - name: Readme.io - Sync OpenAPI Spec
         run: |
-          yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ env.NEXT_VERSION }}-openapi.spec.json \
+          yarn pack @omermorad/openapi.spec
+          tar –xvf omermorad-v${{ steps.git-vars.outputs.next_version }}.tgz documents.tar.gz
+          ls -a
+          yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ steps.git-vars.outputs.next_version }}-openapi.spec.json \
           --version=${{ steps.git-vars.outputs.next_version }} \
           --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
           --update

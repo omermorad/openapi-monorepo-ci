@@ -12,6 +12,7 @@
     "url": "git+https://github.com/omermorad/trytry.git"
   },
   "files": [
+    "CHANGELOG.md",
     "dist/**/*.json"
   ],
   "devDependencies": {

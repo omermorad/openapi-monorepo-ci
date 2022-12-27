@@ -15,6 +15,7 @@
     "url": "git+https://github.com/omermorad/trytry.git"
   },
   "files": [
+    "CHANGELOG.md",
     "index.d.ts",
     "src/**/*.d.ts",
     "README.md"
