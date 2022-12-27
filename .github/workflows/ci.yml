@@ -73,7 +73,7 @@ jobs:
   canary-release:
     name: OpenAPI Canary Release
     needs: [detect-changes, check_skip_flags]
-    if: ${{ contains(needs.check_skip_flags.outputs.head-commit-message, '[canary]') }}
+    if: ${{ contains(needs.check_skip_flags.outputs.head-commit-message, '[canary]') && needs.detect-changes.outputs.changed == 'true' }}
     runs-on: ubuntu-latest
     env:
       NODE_ENV: 'development'
@@ -105,13 +105,8 @@ jobs:
           yarn
           lerna bootstrap --ci
 
-#      - name: Create Env
-#        run: |
-#          cp ./development.env.template ./development.env
-#          docker-compose up -d db redis stripe
-
       - name: Build
         run: yarn lerna run build
 
       - name: Canary
-        run: yarn lerna publish --force-publish --canary --preid $(git rev-parse HEAD) --yes --dist-tag dev
+        run: yarn lerna publish --force-publish --canary --preid $(git rev-parse --short HEAD) --yes --dist-tag dev
