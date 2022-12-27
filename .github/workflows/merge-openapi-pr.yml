@@ -68,9 +68,9 @@ jobs:
 
 #      - name: Push Tag
 #        run: |
-#          git tag -a "${{ steps.git-vars.outputs.next_version_tag }}" \
+#          git tag -a "${{ steps.version-next.outputs.version_tag }}" \
 #          -m "PR #${{ steps.get-merged-pull-request.outputs.number }} ${{ steps.get-merged-pull-request.outputs.title }}"
-#          git push --tags origin "${{ steps.git-vars.outputs.next_version_tag }}"
+#          git push --tags origin "${{ steps.version-next.outputs.version_tag }}"
 
 #      - name: Store OpenAPI Spec Artifact (S3)
 #        uses: jakejarvis/s3-sync-action@master
@@ -83,9 +83,9 @@ jobs:
 #          DEST_DIR: ${{ steps.vars.outputs.next_version_tag }}
 
       - name: Git Vars
-        id: git-vars
+        id: version-next
         run: |
-          echo "prev_version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
+          echo "version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
 
       - name: Version Packages
         run: yarn lerna version --yes --preid next --conventional-commits --conventional-prerelease
@@ -98,9 +98,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Git Vars
-        id: git-vars
+        id: version-prev
         run: |
-          echo "next_version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
+          echo "version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
 
       - name: Create PR Comment
         uses: actions-ecosystem/action-create-comment@v1
@@ -109,24 +109,24 @@ jobs:
           number: ${{ steps.get-merged-pull-request.outputs.number }}
           body: |
             New OpenAPI Version :tada: \
-            [${{ steps.git-vars.outputs.next_version }}](https://github.com/${{ github.repository }}/releases/tag/v${{ steps.git-vars.outputs.next_version }}) has been created.
+            [${{ steps.version-next.outputs.version }}](https://github.com/${{ github.repository }}/releases/tag/v${{ steps.version-next.outputs.version }}) has been created.
 
       - name: Readme.io - Create Version
         run: |
-          yarn rdme versions:create ${{ steps.git-vars.outputs.next_version }} \
+          yarn rdme versions:create ${{ steps.version-next.outputs.version }} \
           --main=false \
           --beta=false \
           --isPublic=false \
           --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
-          --codename=v${{ steps.git-vars.outputs.next_version }} \
-          --fork=${{ steps.git-vars.outputs.prev_version }}
+          --codename=v${{ steps.version-next.outputs.version }} \
+          --fork=${{ steps.version-prev.outputs.version }}
 
       - name: Readme.io - Sync OpenAPI Spec
         run: |
           yarn pack @omermorad/openapi.spec
-          tar –xvf omermorad-v${{ steps.git-vars.outputs.next_version }}.tgz documents.tar.gz
+          tar –xvf omermorad-v${{ steps.version-next.outputs.version }}.tgz documents.tar.gz
           ls -a
-          yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ steps.git-vars.outputs.next_version }}-openapi.spec.json \
-          --version=${{ steps.git-vars.outputs.next_version }} \
+          yarn rdme openapi ${{ env.OPENAPI_FOLDER }}/v${{ steps.version-next.outputs.version }}-openapi.spec.json \
+          --version=${{ steps.version-next.outputs.version }} \
           --key=rdme_xn8s9h15eb2ffe5499a8b83b2cd81e6c8ed68a71d53f6ca6ac483508cae5b574e0bed6 \
           --update
