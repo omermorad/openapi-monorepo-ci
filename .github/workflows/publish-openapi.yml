@@ -1,0 +1,71 @@
+name: Release OpenAPI Next Version
+
+env:
+  NODE_ENV: 'development'
+  APPLICATION_MODE: 'api'
+
+on:
+  push:
+    tags:
+      - openapi**
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Config Git User
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: 'Authenticate with GitHub Packages'
+        run: node npm-auth.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Yarn / Lerna
+        run: |
+          yarn --frozen-lockfile
+          lerna bootstrap
+          yarn add -D -W rdme
+
+      - name: Publish Packages
+        run: yarn lerna publish from-git --yes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Api Latest Version
+        id: openapi
+        run: |
+          echo "version=$(openapi-latest-version)" >> $GITHUB_OUTPUT
+
+      - name: Readme.io - Create Version
+        run: |
+          yarn rdme versions:create ${{ steps.version.outputs.next }} \
+          --main=false \
+          --beta=false \
+          --isPublic=false \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --codename=v${{ steps.version.outputs.prev }} \
+          --fork=${{ steps.version-prev.outputs.version }}
+
+      - name: Readme.io - Sync OpenAPI Spec
+        run: |
+          yarn rdme openapi ./openapi/openapi-spec/dist/openapi.json \
+          --version=${{ steps.version-next.outputs.version }} \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --create

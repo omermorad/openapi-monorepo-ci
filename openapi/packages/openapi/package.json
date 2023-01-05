@@ -1,0 +1,24 @@
+{
+  "name": "@omermorad/openapi",
+  "version": "1.0.0",
+  "private": false,
+  "license": "UNLICENSED",
+  "scripts": {
+    "prebuild": "yarn rimraf dist",
+    "build": "yarn ts-node -r tsconfig-paths/register src/openapi-spec.exporter.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omermorad/trytry.git"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist/openapi.json"
+  ],
+  "devDependencies": {
+    "@omermorad/openapi.versions": "*"
+  },
+  "publishConfig": {
+    "@omermorad:registry": "https://npm.pkg.github.com/omermorad"
+  }
+}

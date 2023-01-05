@@ -1,0 +1,30 @@
+{
+  "name": "openapi-monorepo-ci-root",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/omermorad/trytry.git",
+  "author": "omermorad <omer.moradd@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "auth": "node ./npm-auth"
+  },
+  "devDependencies": {
+    "@types/node": "16.x.x",
+    "conventional-changelog-cli": "^2.2.2",
+    "lerna": "^6.1.0",
+    "rdme": "^8.4.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.1",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "axios": "^1.2.1"
+  },
+  "workspaces": [
+    "src/balance-openapi",
+    "openapi/packages/*",
+    "openapi/openapi-versions"
+  ]
+}

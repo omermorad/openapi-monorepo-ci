@@ -1,0 +1,45 @@
+name: Release OpenAPI Stable Version
+
+env:
+  NODE_ENV: 'development'
+  APPLICATION_MODE: 'api'
+
+on: [workflow_dispatch]
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Config Git User
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: 'Authenticate with GitHub Packages'
+        run: node npm-auth.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Yarn / Lerna
+        run: |
+          yarn --frozen-lockfile
+          lerna bootstrap
+
+      - name: Lerna Bump Packages Version - Stable Version
+        run: yarn lerna version --yes --conventional-commits --conventional-graduate --create-release github
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,1557 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/qualification/{buyerId}/preApproval": {
+      "post": {
+        "operationId": "QualificationOpenAPIController_updateQualificationDataVer1_0_1",
+        "parameters": [
+          {
+            "name": "buyerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualificationPreApprovalSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "The API key is not valid"
+          }
+        },
+        "tags": [
+          "Qualification"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
+    "/transactions": {
+      "post": {
+        "operationId": "transaction.crud.create-transaction",
+        "summary": "",
+        "description": "Creates a new transaction entity",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "The object to be passed to endpoint to create the transaction.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTransactionSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": ""
+          },
+          "409": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Operations"
+        ]
+      },
+      "get": {
+        "operationId": "transaction.crud.list-transactions",
+        "summary": "",
+        "description": "Returns a list of all transactions created in the account.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Operations"
+        ]
+      }
+    },
+    "/transactions/search": {
+      "get": {
+        "operationId": "transaction.crud.search-transaction",
+        "summary": "",
+        "description": "Returns a paginated list of transactions created in the account.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Operations"
+        ]
+      }
+    },
+    "/transactions/{transactionId}": {
+      "get": {
+        "operationId": "transaction.crud.get-transaction",
+        "summary": "",
+        "description": "Returns the details of a transaction entity.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Operations"
+        ]
+      },
+      "put": {
+        "operationId": "transaction.crud.update-transaction",
+        "summary": "",
+        "description": "Updates an existing transaction entity.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Operations"
+        ]
+      },
+      "delete": {
+        "operationId": "transaction.crud.delete-transaction",
+        "summary": "",
+        "description": "Deletes a transaction entity.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Operations"
+        ]
+      }
+    },
+    "/transactions/{transactionId}/info": {
+      "get": {
+        "operationId": "transaction.crud.transaction-info",
+        "summary": "",
+        "description": "Returns information for check or wire transfers that can be shared with buyers outside the hosted invoice.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chargeId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Operations"
+        ]
+      }
+    },
+    "/transactions/closed/{transactionId}": {
+      "put": {
+        "operationId": "transaction.crud.update-transaction",
+        "summary": "",
+        "description": "Updates an existing closed transaction entity.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClosedTransactionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Operations"
+        ]
+      }
+    },
+    "/transactions/bulk": {
+      "post": {
+        "operationId": "transaction.checkout.bulk",
+        "summary": "",
+        "description": "Create transactions in bulk, for multi-cart purchases.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Array of transaction objects.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultipleTransactionsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Checkout Integration"
+        ]
+      }
+    },
+    "/transactions/{transactionId}/token": {
+      "get": {
+        "operationId": "transaction.checkout.get-token",
+        "summary": "",
+        "description": "Returns temporary token to be used in the checkout experience for a transaction entity.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Checkout Integration"
+        ]
+      }
+    },
+    "/transactions/{transactionId}/send": {
+      "post": {
+        "operationId": "transaction.invoicing.send-link",
+        "summary": "",
+        "description": "\n    Attempts to email a transaction hosted checkout page to addresses configured for communication.\n    The transaction must be in an open state (\"DRAFT\" in the dashboard).",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTransactionLink"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Invoicing"
+        ]
+      }
+    },
+    "/invoice/{chargeId}/send": {
+      "post": {
+        "operationId": "transaction.invoicing.send-invoice",
+        "summary": "",
+        "description": "Manually send invoices to specified emails. If emails are not specified, invoice is sent to buyer email address.",
+        "parameters": [
+          {
+            "name": "chargeId",
+            "required": true,
+            "in": "path",
+            "description": "Balance ID associated with the charge.",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommunicationConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Invoicing"
+        ]
+      }
+    },
+    "/transactions/invoice/upload": {
+      "post": {
+        "operationId": "transaction.invoicing.upload-invoice",
+        "summary": "",
+        "description": "Send Balance an external invoice PDF file, that can be attached to a Balance invoice.",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "415": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Invoicing"
+        ]
+      }
+    },
+    "/charges/{chargeId}/attach": {
+      "post": {
+        "operationId": "transaction.invoicing.attach-invoice",
+        "summary": "",
+        "description": "Attach an uploaded invoice to a Balance charge",
+        "parameters": [
+          {
+            "name": "chargeId",
+            "required": true,
+            "in": "path",
+            "description": "Balance ID associated with the charge.",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChargeAttachRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Invoicing"
+        ]
+      }
+    },
+    "/transactions/{transactionId}/capture": {
+      "post": {
+        "operationId": "transaction.processing.capture",
+        "summary": "",
+        "description": "Attempts to partially or fully capture a transaction.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureTransactionSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Processing"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
+    "/transactions/{transactionId}/confirm": {
+      "post": {
+        "operationId": "transaction.processing.confirm",
+        "summary": "",
+        "description": "Attempts to confirm a transaction with/without auth/financing for selected payment method",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmTransactionSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Processing"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
+    "/transactions/{transactionId}/close": {
+      "post": {
+        "operationId": "transaction.processing.close",
+        "summary": "",
+        "description": "Closes a transaction, restricting future updates or captures against it. Releases any authorized credit limit that was not captured.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Processing"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
+    "/transactions/{transactionId}/cancel": {
+      "post": {
+        "operationId": "transaction.processing.cancel",
+        "summary": "",
+        "description": "Cancels a transaction, thereby cancelling any future pending charges.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the transaction entity.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelTransactionSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction Processing"
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
+    "/settings": {
+      "get": {
+        "operationId": "SettingsController_getSettingsForDashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "SettingsController_updateSettings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMerchantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      }
+    },
+    "/settings/{merchantId}": {
+      "put": {
+        "operationId": "SettingsController_updateSettingsAsAdmin",
+        "parameters": [
+          {
+            "name": "merchantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternalUpdateMerchantSettingsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      }
+    },
+    "/settings/bank": {
+      "get": {
+        "operationId": "SettingsController_getBankAccount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "SettingsController_updateBankAccount",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BankAccountDetails"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      }
+    },
+    "/settings/tenant": {
+      "get": {
+        "operationId": "SettingsController_getTenantMetadata",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "Authorisation": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Balance OpenAPI",
+    "description": "",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "https://api.sandbox.getbalance.com",
+      "description": "sandbox"
+    },
+    {
+      "url": "https://api.getbalance.com",
+      "description": "production"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "PreApprovalAddressInfoSchema": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "zipCode": {
+            "type": "string"
+          },
+          "address1": {
+            "type": "string"
+          },
+          "address2": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "state",
+          "city",
+          "zipCode",
+          "address1",
+          "country"
+        ]
+      },
+      "PreApprovalInfoSchema": {
+        "type": "object",
+        "properties": {
+          "businessAddress": {
+            "$ref": "#/components/schemas/PreApprovalAddressInfoSchema"
+          },
+          "ein": {
+            "type": "string"
+          },
+          "businessName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "businessAddress",
+          "ein",
+          "businessName"
+        ]
+      },
+      "QualificationPreApprovalSchema": {
+        "type": "object",
+        "properties": {
+          "businessAddress": {
+            "$ref": "#/components/schemas/PreApprovalAddressInfoSchema"
+          },
+          "ein": {
+            "type": "string"
+          },
+          "businessName": {
+            "type": "string"
+          },
+          "The request amount for the qualification pre-approval": {
+            "type": "number",
+            "example": 1000,
+            "description": "Qualification requested amount"
+          }
+        },
+        "required": [
+          "businessAddress",
+          "ein",
+          "businessName"
+        ]
+      },
+      "AddressSchema": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "streetAddress2": {
+            "type": "string"
+          },
+          "zipCode": {
+            "type": "string"
+          }
+        }
+      },
+      "BuyerSubSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "draft": {
+            "type": "boolean"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "businessName": {
+            "type": "string"
+          },
+          "businessUrl": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "address": {
+            "$ref": "#/components/schemas/AddressSchema"
+          },
+          "isRegistered": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "businessName",
+          "businessUrl",
+          "isRegistered"
+        ]
+      },
+      "PaymentMethodIdSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "RecurringPaymentRequestSchema": {
+        "type": "object",
+        "properties": {
+          "timeUnit": {
+            "type": "string",
+            "enum": [
+              "monthly",
+              "yearly"
+            ]
+          },
+          "numberOfTotalRepeats": {
+            "type": "number"
+          },
+          "startDate": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "timeUnit"
+        ]
+      },
+      "CreateTransactionSchema": {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "buyer": {
+            "$ref": "#/components/schemas/BuyerSubSchema"
+          },
+          "totalShipping": {
+            "type": "string"
+          },
+          "totalLineItems": {
+            "type": "string"
+          },
+          "totalDiscount": {
+            "type": "number"
+          },
+          "termsNetDays": {
+            "type": "number"
+          },
+          "billingAddress": {
+            "$ref": "#/components/schemas/AddressSchema"
+          },
+          "shippingAddress": {
+            "$ref": "#/components/schemas/AddressSchema"
+          },
+          "paymentTerm": {
+            "type": "string"
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "chargeDate": {
+            "type": "string"
+          },
+          "paymentGateway": {
+            "$ref": "#/components/schemas/PaymentMethodIdSchema"
+          },
+          "allowedPaymentMethods": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "creditCard",
+                "bank",
+                "wire",
+                "sepaCredit",
+                "check",
+                "payWithTerms",
+                "invoice",
+                "pads",
+                "paySupplier",
+                "achCredit",
+                "achDebit",
+                "outOfPlatform"
+              ]
+            }
+          },
+          "allowedTermsPaymentMethods": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "creditCard",
+                "bank",
+                "wire",
+                "sepaCredit",
+                "check",
+                "payWithTerms",
+                "invoice",
+                "pads",
+                "paySupplier",
+                "achCredit",
+                "achDebit",
+                "outOfPlatform"
+              ]
+            }
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "installments": {
+            "type": "number"
+          },
+          "milestones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recurringPayment": {
+            "$ref": "#/components/schemas/RecurringPaymentRequestSchema"
+          },
+          "autoPayouts": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "referenceId": {
+            "type": "string"
+          },
+          "qualification": {
+            "type": "boolean"
+          },
+          "emailsTo": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "emailsCc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "authAmount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "currency",
+          "buyer",
+          "totalShipping",
+          "totalLineItems"
+        ]
+      },
+      "FinancingConfig": {
+        "type": "object",
+        "properties": {
+          "financingNetAmount": {
+            "type": "number"
+          }
+        }
+      },
+      "CommunicationConfig": {
+        "type": "object",
+        "properties": {
+          "emailsTo": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "emailsCc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "StatementDescriptor": {
+        "type": "object",
+        "properties": {
+          "charge": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "charge"
+        ]
+      },
+      "AddressRequestUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "addressLine1": {
+            "type": "string"
+          },
+          "addressLine2": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "zipCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "addressLine1",
+          "addressLine2",
+          "countryCode",
+          "state",
+          "zipCode",
+          "city"
+        ]
+      },
+      "TransactionUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "financingConfig": {
+            "$ref": "#/components/schemas/FinancingConfig"
+          },
+          "communicationConfig": {
+            "$ref": "#/components/schemas/CommunicationConfig"
+          },
+          "externalReferenceId": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "statementDescriptor": {
+            "$ref": "#/components/schemas/StatementDescriptor"
+          },
+          "autoPayouts": {
+            "type": "boolean"
+          },
+          "marketplaceFixedTake": {
+            "type": "number"
+          },
+          "marketplacePercentageTake": {
+            "type": "number"
+          },
+          "buyerId": {
+            "type": "string"
+          },
+          "plan": {
+            "type": "object"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "billingAddress": {
+            "$ref": "#/components/schemas/AddressRequestUpdateRequest"
+          },
+          "shippingAddress": {
+            "$ref": "#/components/schemas/AddressRequestUpdateRequest"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "authAmount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "plan",
+          "lines"
+        ]
+      },
+      "ClosedTransactionUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "autoPayouts": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "autoPayouts"
+        ]
+      },
+      "AddressRequest": {
+        "type": "object",
+        "properties": {
+          "addressLine1": {
+            "type": "string"
+          },
+          "addressLine2": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "zipCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "addressLine1",
+          "countryCode",
+          "city"
+        ]
+      },
+      "TransactionBuyerSchema": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "communicationConfig": {
+            "$ref": "#/components/schemas/CommunicationConfig"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "businessName": {
+            "type": "string"
+          },
+          "businessUrl": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "billingAddress": {
+            "$ref": "#/components/schemas/AddressRequest"
+          },
+          "isRegistered": {
+            "type": "boolean"
+          },
+          "externalReferenceId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "TransactionPlan": {
+        "type": "object",
+        "properties": {
+          "chargeDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "installments": {
+            "type": "number"
+          },
+          "milestones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recurringPayment": {
+            "$ref": "#/components/schemas/RecurringPaymentRequestSchema"
+          }
+        }
+      },
+      "TransactionRequest": {
+        "type": "object",
+        "properties": {
+          "financingConfig": {
+            "$ref": "#/components/schemas/FinancingConfig"
+          },
+          "communicationConfig": {
+            "$ref": "#/components/schemas/CommunicationConfig"
+          },
+          "externalReferenceId": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "statementDescriptor": {
+            "$ref": "#/components/schemas/StatementDescriptor"
+          },
+          "autoPayouts": {
+            "type": "boolean"
+          },
+          "marketplaceFixedTake": {
+            "type": "number"
+          },
+          "marketplacePercentageTake": {
+            "type": "number"
+          },
+          "buyer": {
+            "$ref": "#/components/schemas/TransactionBuyerSchema"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/TransactionPlan"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "totalDiscount": {
+            "type": "number"
+          },
+          "billingAddress": {
+            "$ref": "#/components/schemas/AddressRequest"
+          },
+          "shippingAddress": {
+            "$ref": "#/components/schemas/AddressRequest"
+          },
+          "authAmount": {
+            "type": "number"
+          },
+          "invoiceSource": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "buyer",
+          "plan",
+          "currency",
+          "lines"
+        ]
+      },
+      "MultipleTransactionsRequest": {
+        "type": "object",
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionRequest"
+            }
+          }
+        },
+        "required": [
+          "transactions"
+        ]
+      },
+      "SendTransactionLink": {
+        "type": "object",
+        "properties": {
+          "isAuth": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ChargeAttachRequestSchema": {
+        "type": "object",
+        "properties": {
+          "fileGuid": {
+            "type": "string"
+          },
+          "invoiceId": {
+            "type": "string"
+          },
+          "includeInstructions": {
+            "type": "boolean"
+          },
+          "billedOnDate": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fileGuid",
+          "billedOnDate"
+        ]
+      },
+      "CaptureTransactionSchema": {
+        "type": "object",
+        "properties": {
+          "vendorId": {
+            "type": "string"
+          },
+          "captureAmount": {
+            "type": "number"
+          }
+        }
+      },
+      "ConfirmTransactionSchema": {
+        "type": "object",
+        "properties": {
+          "paymentMethodId": {
+            "type": "string"
+          },
+          "isFinanced": {
+            "type": "boolean"
+          },
+          "isAuth": {
+            "type": "boolean"
+          },
+          "termsNetDays": {
+            "type": "number"
+          }
+        }
+      },
+      "VendorDebitSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "CancelTransactionSchema": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string"
+          },
+          "refund": {
+            "type": "object"
+          },
+          "vendorDebitSchema": {
+            "$ref": "#/components/schemas/VendorDebitSchema"
+          }
+        }
+      },
+      "DashboardSettingsRequest": {
+        "type": "object",
+        "properties": {
+          "defaultPaymentMethods": {
+            "type": "object"
+          }
+        }
+      },
+      "UpdateMerchantRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "logo": {
+            "type": "string"
+          },
+          "logoType": {
+            "type": "string"
+          },
+          "takeRate": {
+            "type": "object"
+          },
+          "dashboardSettings": {
+            "$ref": "#/components/schemas/DashboardSettingsRequest"
+          },
+          "primaryColor": {
+            "type": "string"
+          },
+          "secondaryColor": {
+            "type": "string"
+          },
+          "statementDescriptor": {
+            "type": "string"
+          }
+        }
+      },
+      "InternalUpdateMerchantSettingsRequest": {
+        "type": "object",
+        "properties": {
+          "primaryColor": {
+            "type": "string"
+          },
+          "secondaryColor": {
+            "type": "string"
+          },
+          "feesOnVendor": {
+            "type": "boolean"
+          },
+          "ccAuthAutoRenewal": {
+            "type": "boolean"
+          },
+          "addTransactionNoteToStatements": {
+            "type": "boolean"
+          },
+          "useInHouseTerms": {
+            "type": "boolean"
+          },
+          "qualificationWithPlaid": {
+            "type": "boolean"
+          },
+          "statementDescriptor": {
+            "type": "string"
+          },
+          "qualificationType": {
+            "type": "string"
+          },
+          "paymentEmails": {
+            "type": "boolean"
+          },
+          "qualificationAppDenyCreditBureau": {
+            "type": "boolean"
+          },
+          "invoicePageConfiguration": {
+            "type": "object"
+          },
+          "instantACH": {
+            "type": "object"
+          },
+          "maximumNegativeBalance": {
+            "type": "object"
+          },
+          "emailConfig": {
+            "type": "object"
+          },
+          "dashboardSettings": {
+            "$ref": "#/components/schemas/DashboardSettingsRequest"
+          },
+          "buyerSettings": {
+            "type": "object"
+          }
+        }
+      },
+      "BankAccountDetails": {
+        "type": "object",
+        "properties": {
+          "routingNumber": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "routingNumber"
+        ]
+      }
+    }
+  }
+}
