@@ -7,9 +7,6 @@ on:
   pull_request:
     branches:
       - master
-    paths:
-      - './openapi/packages/**/*'
-      - './src/balance-openapi/**/*.ts'
 
 jobs:
   detect-changes:
