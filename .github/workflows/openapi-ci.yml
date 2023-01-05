@@ -38,6 +38,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Print head git commit message
+        id: get_head_commit_message
+        run: echo "::set-output name=commit_message::$(git show -s --format=%s)"
+
   label-pr:
     name: Label PR
     needs: [detect-changes]
