@@ -6,7 +6,6 @@ on:
       - master
     paths:
       - 'openapi/packages/**'
-      - 'src/balance-openapi/**/*'
 
 jobs:
   version-packages:
