@@ -45,8 +45,6 @@ jobs:
 
       - name: Build
         run: yarn lerna run build
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Packages
         run: yarn lerna publish from-git --yes

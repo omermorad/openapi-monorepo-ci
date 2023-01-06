@@ -36,6 +36,9 @@ jobs:
           yarn --frozen-lockfile
           lerna bootstrap --ci
 
+      - name: Build
+        run: yarn lerna run build
+
       - name: Version Packages
         run: yarn lerna version preminor --yes --preid next --conventional-commits --conventional-prerelease
         env:
