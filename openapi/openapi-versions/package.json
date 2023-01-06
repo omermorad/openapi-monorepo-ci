@@ -1,0 +1,24 @@
+{
+  "name": "@openapi/versions",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "module": "./index.d.ts",
+  "license": "UNLICENSED",
+  "repository": "https://github.com/omermorad/trytry/tree/master/openapi/openapi-versions",
+  "bin": {
+    "openapi-lastest-version": "./cli.js"
+  },
+  "files": [
+    "src/versions.ts",
+    "src/versions.d.ts",
+    "index.js"
+  ],
+  "publishConfig": {
+    "@omermorad:registry": "https://npm.pkg.github.com/omermorad"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.4"
+  }
+}

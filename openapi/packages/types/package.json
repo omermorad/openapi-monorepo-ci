@@ -1,0 +1,25 @@
+{
+  "name": "@omermorad/openapi.types",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "types": "./index.d.ts",
+  "author": "Balance Engineering",
+  "description": "Balance OpenAPI request/response types",
+  "scripts": {
+    "prebuild": "yarn rimraf dist",
+    "build": "tsc"
+  },
+  "repository": "https://github.com/omermorad/trytry/tree/master/openapi/packages/types",
+  "files": [
+    "CHANGELOG.md",
+    "index.d.ts",
+    "src/**/*.d.ts",
+    "README.md"
+  ],
+  "devDependencies": {
+    "rimraf": "^3.0.2"
+  },
+  "publishConfig": {
+    "@omermorad:registry": "https://npm.pkg.github.com/omermorad"
+  }
+}

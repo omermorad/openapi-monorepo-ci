@@ -1,0 +1,21 @@
+{
+  "name": "@openapi/exporter",
+  "version": "1.0.0",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "private": true,
+  "license": "UNLICENSED",
+  "repository": "https://github.com/omermorad/trytry/tree/master/openapi/openapi-exporter",
+  "files": [
+    "CHANGELOG.md",
+    "README.md",
+    "dist/**/*"
+  ],
+  "devDependencies": {
+    "@nestjs/common": "^8.1.1",
+    "@nestjs/core": "^8.1.1",
+    "@nestjs/swagger": "^5.1.1",
+    "@openapi/versions": "*",
+    "typescript": "^4.4.4"
+  }
+}
