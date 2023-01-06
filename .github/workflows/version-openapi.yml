@@ -6,7 +6,6 @@ on:
       - master
     paths:
       - 'openapi/packages/**'
-      - 'src/balance-openapi/**/*'
 
 jobs:
   version-packages:
@@ -36,6 +35,9 @@ jobs:
         run: |
           yarn --frozen-lockfile
           lerna bootstrap --ci
+
+      - name: Build
+        run: yarn lerna run build
 
       - name: Version Packages
         run: yarn lerna version preminor --yes --preid next --conventional-commits --conventional-prerelease
