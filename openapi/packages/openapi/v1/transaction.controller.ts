@@ -7,7 +7,7 @@ export class TransactionController {
   @Get()
   public getTransaction(): Transaction.TransactionResponseSchema {
     return {
-      id: 'something-with-id-0',
+      id: 'something-with-id-3',
     };
   }
 }
