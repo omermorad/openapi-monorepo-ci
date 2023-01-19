@@ -2,6 +2,6 @@ import { Module } from '@nestjs/common';
 import { TransactionController } from './transaction.controller';
 
 @Module({
-  imports: [TransactionController]
+  controllers: [TransactionController]
 })
 export class OpenApiModuleVersionNext {}

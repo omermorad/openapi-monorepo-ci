@@ -8,7 +8,7 @@ const API_VERSIONS_TO_MODULES: Record<OpenApiVersion, any> = {
   [OpenApiVersion.Next]: OpenApiModuleVersionNext,
 };
 
-@Module({ imports: Object.values(API_VERSIONS_TO_MODULES) })
+@Module({ imports: [OpenApiModuleV1, OpenApiModuleVersionNext] })
 export class OpenApiRootModule {
   public static nextVersionTargetModule() {
     return API_VERSIONS_TO_MODULES[OpenApiVersion.Next];
