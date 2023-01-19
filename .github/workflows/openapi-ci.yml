@@ -1,0 +1,119 @@
+name: OpenAPI
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: 'write'
+  pages: 'write'
+
+jobs:
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files in openapi folder
+        id: openapi-changes
+        uses: tj-actions/changed-files@v35
+        with:
+          files: |
+            openapi/packages/**/*.ts
+    outputs:
+      changed: ${{ steps.openapi-changes.outputs.any_changed }}
+
+  label-pr:
+    name: Label PR
+    needs: [detect-changes]
+    if: ${{ needs.detect-changes.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: OpenAPI
+
+  validate-title:
+    name: Validate PR Title
+    needs: [detect-changes]
+    if: ${{ needs.detect-changes.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            fix
+            feat
+            refactor
+            docs
+          scopes: |
+            openapi.types
+            openapi
+          requireScope: true
+
+  preview:
+    name: Build & Publish Preview
+    needs: [detect-changes, validate-title]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - name: 'Authenticate with GitHub Packages'
+        run: yarn auth
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Boostrap Yarn / Lerna
+        run: |
+          yarn --frozen-lockfile
+          lerna bootstrap --ci
+
+      - name: Build
+        run: yarn lerna run build --since origin/master
+
+      - name: Generate Swagger UI Preview
+        uses: Legion2/swagger-ui-action@v1
+        with:
+          output: swagger-ui
+          spec-file: ./openapi/packages/openapi/dist/openapi.json
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+
+      - name: Build Preview
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: swagger-ui
+          destination: ./_site
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v1
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: preview
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
