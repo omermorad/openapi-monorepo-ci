@@ -1,3 +1,4 @@
+import { OpenApiVersion } from '@omermorad/openapi/openapi-versions';
 import fs, { existsSync, writeFileSync } from 'fs';
 import { NestFactory } from '@nestjs/core';
 import { VersioningType } from '@nestjs/common';

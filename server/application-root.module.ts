@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { OpenapiRootModule } from '@omermorad/openapi/balance-openapi.module';
+import { OpenApiRootModule } from '@omermorad/openapi/openapi-root.module';
 
 @Module({
-  imports: [OpenapiRootModule]
+  imports: [OpenApiRootModule]
 })
 export class ApplicationRootModule {}
