@@ -93,18 +93,15 @@ jobs:
         uses: actions/jekyll-build-pages@v1
         with:
           source: swagger-ui
-          destination: ./_site
+          destination: ./swagger-ui
 
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v1
 
-  deploy:
-    needs: preview
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: swagger-ui
+          git-config-name: OpenAPI Bot
+          git-config-email: openapi-bot@getbalance.com
+          commit-message: 'docs(openapi): set preview env'
