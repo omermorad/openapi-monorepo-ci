@@ -1,7 +1,7 @@
 {
   "name": "@omermorad/openapi",
   "license": "UNLICENSED",
-  "version": "1.1.0-next.0",
+  "version": "1.0.0",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "yarn ts-node -r tsconfig-paths/register build.ts"
@@ -18,7 +18,7 @@
     "rxjs": "^7.1.0"
   },
   "devDependencies": {
-    "@omermorad/openapi.types": "^1.1.0-next.0",
+    "@omermorad/openapi.types": "^1.0.0",
     "ts-node": "^8.10.1",
     "typescript": "^4.4.4"
   },

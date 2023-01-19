@@ -18,6 +18,12 @@ class TransactionResponseSchema implements Transaction.TransactionResponseSchema
    */
   @ApiProperty()
   token: string;
+
+  /**
+   * @since next
+   */
+  @ApiProperty()
+  created: Date;
 }
 
 @ApiTags('Transaction')
@@ -38,6 +44,7 @@ export class TransactionController {
     return {
       token: '1234-1234-1234-1234',
       id: 'txn_1ILpBlDI8A3U6F9iCzxTIA37',
+      created: new Date(),
     };
   }
 }
