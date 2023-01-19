@@ -15,4 +15,4 @@ export const OpenApiVersion: Record<OpenApiVersions, string> = {
 
 export type OpenApiVersion = typeof OpenApiVersion[keyof typeof OpenApiVersion];
 
-export const NEXT_OPENAPI_VERSION = `${MAJOR_VERSION}.${MINOR_VERSION}`;
+export const NEXT_OPENAPI_VERSION = `${MAJOR_VERSION}.${Number(MINOR_VERSION) + 1}`;

@@ -1,5 +1,6 @@
 {
   "name": "@omermorad/openapi",
+  "license": "UNLICENSED",
   "version": "1.0.0",
   "scripts": {
     "prebuild": "rimraf dist",

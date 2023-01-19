@@ -7,15 +7,16 @@ import { OpenApiVersion } from '../../openapi-versions';
  * @version next
  */
 class TransactionResponseSchema implements Transaction.TransactionResponseSchema {
-  @ApiProperty()
   /**
    * @since 1.0
    */
+  @ApiProperty()
   id: string;
 
   /**
    * @since next
    */
+  @ApiProperty()
   token: string;
 }
 

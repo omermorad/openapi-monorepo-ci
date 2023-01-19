@@ -20,7 +20,7 @@
     "typescript": "^4.4.4"
   },
   "workspaces": [
-    "./server/controllers",
+    "./server",
     "./openapi/packages/*",
     "./openapi/openapi-exporter",
     "./openapi/openapi-versions"
