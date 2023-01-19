@@ -1,4 +1,4 @@
 import { Module } from '@nestjs/common';
 
-@Module({ imports: [] })
+@Module({})
 export class OpenApiModuleVersionNext {}
