@@ -1,7 +1,18 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Transaction {
+  /**
+   * @since 1.0
+   */
   export interface TransactionResponseSchema {
+    /**
+     * @since 1.0
+     */
     id: string;
+
+    /**
+     * @since 1.1
+     */
+    token: string;
   }
 
   export interface FinancingConfig {
