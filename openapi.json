@@ -1,0 +1,1 @@
+{"openapi":"3.0.0","paths":{},"info":{"title":"Balance OpenAPI","description":"","version":"1.0","contact":{}},"tags":[],"servers":[{"url":"https://api.sandbox.getbalance.com","description":"Sandbox"},{"url":"https://api.getbalance.com","description":"Production"}],"components":{"schemas":{}}}
