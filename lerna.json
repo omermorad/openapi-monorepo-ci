@@ -1,0 +1,31 @@
+{
+  "version": "1.1.0-next.0",
+  "command": {
+    "publish": {
+      "allowBranch": [
+        "master",
+        "next"
+      ],
+      "message": "chore(openapi): release openapi packages [skip ci]",
+      "conventionalCommits": true
+    },
+    "version": {
+      "allowBranch": [
+        "master",
+        "next"
+      ],
+      "message": "chore(openapi): version openapi packages [skip ci]",
+      "conventionalCommits": true
+    }
+  },
+  "useWorkspaces": true,
+  "npmClient": "yarn",
+  "packages": [
+    "server/controllers",
+    "openapi/packages/*"
+  ],
+  "ignoreChanges": [
+    "openapi/openapi-versions",
+    "openapi/openapi-exporter"
+  ]
+}

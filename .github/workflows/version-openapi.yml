@@ -1,0 +1,87 @@
+name: OpenAPI Prerelease - Next
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'openapi/packages/**'
+
+jobs:
+  version-packages:
+    name: Version Packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions-ecosystem/action-get-merged-pull-request@v1
+        id: get-merged-pull-request
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Config Git User
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: 'Authenticate with GitHub Packages'
+        run: yarn auth
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Yarn / Lerna
+        run: |
+          yarn --frozen-lockfile
+          lerna bootstrap --ci
+
+      - name: Build
+        run: yarn lerna run build
+
+      - name: Get Lerna Current Version
+        id: lerna-current
+        run: |
+          echo "version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
+
+      - name: Version Packages
+        run: |
+          yarn lerna version \
+          --yes --preid next \
+          --conventional-commits \
+          --conventional-prerelease \
+          --tag-version-prefix='openapi@'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Get Lerna Next Version
+        id: lerna-next
+        run: |
+          echo "version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
+
+      - name: Readme.io - Create Version
+        run: |
+          yarn rdme versions:create ${{ steps.lerna-next.outputs.version }} \
+          --main=false \
+          --beta=false \
+          --isPublic=false \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --codename=v${{ steps.lerna-next.outputs.version }} \
+          --fork=${{ steps.lerna-current.outputs.version }}
+
+      - name: Readme.io - Sync OpenAPI Spec
+        run: |
+          yarn rdme openapi ./openapi/packages/openapi/dist/openapi.json \
+          --version=${{ steps.lerna-next.outputs.version }} \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --create
+
+      - name: Create PR Comment
+        uses: actions-ecosystem/action-create-comment@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ steps.get-merged-pull-request.outputs.number }}
+          body: |
+            *New OpenAPI Version Released!* :tada: \
+            [${{ steps.lerna.outputs.version }}](https://github.com/${{ github.repository }}/releases/tag/v${{ steps.lerna.outputs.version }}) has been created.
