@@ -1,4 +1,4 @@
-import { Module, Type } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { OpenApiVersion } from './openapi-versions';
 import { OpenApiModuleVersionNext } from './versions/v-next/openapi-next.module';
 import { OpenApiModuleV1 } from './versions/v1/v1.0/openapi.module';
