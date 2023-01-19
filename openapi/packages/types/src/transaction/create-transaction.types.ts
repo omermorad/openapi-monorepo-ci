@@ -7,12 +7,12 @@ export namespace Transaction {
     /**
      * @since 1.0
      */
-    id: string;
+    readonly id: string;
 
     /**
      * @since 1.1
      */
-    token: string;
+    readonly token?: string;
   }
 
   export interface FinancingConfig {
