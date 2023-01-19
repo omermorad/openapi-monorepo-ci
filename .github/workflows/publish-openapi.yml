@@ -1,0 +1,53 @@
+name: Release OpenAPI Next Version
+
+env:
+  NODE_ENV: 'development'
+  APPLICATION_MODE: 'api'
+
+on:
+  push:
+    tags:
+      - openapi@*
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Config Git User
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: 'Authenticate with GitHub Packages'
+        run: node npm-auth.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Yarn / Lerna
+        run: |
+          yarn --frozen-lockfile
+          lerna bootstrap --ci
+          yarn add -D -W rdme
+
+      - name: Build
+        run: yarn lerna run build
+
+      - name: Publish Packages
+        run: yarn lerna publish from-git --yes --tag-version-prefix='openapi@'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
