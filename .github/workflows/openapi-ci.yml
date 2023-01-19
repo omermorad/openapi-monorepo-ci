@@ -1,12 +1,14 @@
 name: OpenAPI
-env:
-  NODE_ENV: 'development'
-  APPLICATION_MODE: 'api'
 
 on:
   pull_request:
     branches:
       - master
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   detect-changes:
@@ -57,13 +59,10 @@ jobs:
             openapi
           requireScope: true
 
-  canary-release:
+  preview:
     name: Build & Publish Preview
     needs: [detect-changes, validate-title]
     runs-on: ubuntu-latest
-    env:
-      NODE_ENV: 'development'
-      APPLICATION_MODE: 'api'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -92,8 +91,25 @@ jobs:
           output: swagger-ui
           spec-file: ./openapi/packages/openapi/dist/openapi.json
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+
+      - name: Build Preview
+        uses: actions/jekyll-build-pages@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: swagger-ui
+          source: swagger-ui
+          destination: ./_site
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+
+    deploy:
+      needs: preview
+      runs-on: ubuntu-latest
+      environment:
+        name: github-pages
+        url: ${{ steps.deployment.outputs.page_url }}
+      steps:
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v1
