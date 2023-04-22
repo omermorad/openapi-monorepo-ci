@@ -79,7 +79,7 @@ jobs:
       - name: Readme.io - Create OpenAPI Spec
         if: steps.version-exists.outcome != 'success'
         run: |
-          yarn rdme openapi ./server/openapi/openapi.json \
+          yarn rdme openapi ./openapi/packages/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --key=${{ secrets.READMEIO_API_KEY }} \
           --create
@@ -93,7 +93,7 @@ jobs:
       - name: Readme.io - Update OpenAPI Spec
         if: steps.version-exists.outcome != 'failure'
         run: |
-          yarn rdme openapi ./server/openapi/openapi.json \
+          yarn rdme openapi ./openapi/packages/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --key=${{ secrets.READMEIO_API_KEY }} \
           --id=${{ steps.project.outputs.id }}
