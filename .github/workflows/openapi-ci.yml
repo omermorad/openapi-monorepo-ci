@@ -63,9 +63,7 @@ jobs:
 
       - name: Readme.io - Get Project ID
         id: project
-        run: |
-          echo ${{ steps.existing.outputs.info }}
-          echo "id=$(fromJson(steps.version-exists.outputs.info)._id)" >> $GITHUB_OUTPUT
+        run: echo "id=$(fromJson(${{ steps.existing.outputs.info }})._id)" >> $GITHUB_OUTPUT
 
       - name: Readme.io - Create Version
         if: failure() && steps.version-exists.outcome == 'failure'
