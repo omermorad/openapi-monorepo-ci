@@ -66,7 +66,7 @@ jobs:
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}
 
       - name: Readme.io - Create Version
-        if: steps.version-exists.outcome != 'success'
+        if: failure() && steps.version-exists.outcome == 'failure'
         run: |
           yarn rdme versions:create ${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --main=false \
@@ -77,7 +77,7 @@ jobs:
           --fork=${{ steps.lerna-current.outputs.version }}
 
       - name: Readme.io - Create OpenAPI Spec
-        if: steps.version-exists.outcome != 'success'
+        if: failure() && steps.version-exists.outcome == 'failure'
         run: |
           yarn rdme openapi ./openapi/packages/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
@@ -85,13 +85,13 @@ jobs:
           --create
 
       - name: Readme.io - Get Project ID
-        if: steps.version-exists.outcome != 'fail'
+        if: success() && steps.version-exists.outcome == 'success'
         id: project
         run: |
           echo "id=$(fromJson(steps.version-exists.outputs.info)._id)" >> $GITHUB_OUTPUT
 
       - name: Readme.io - Update OpenAPI Spec
-        if: steps.version-exists.outcome != 'failure'
+        if: success() && steps.version-exists.outcome == 'success'
         run: |
           yarn rdme openapi ./openapi/packages/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
@@ -99,7 +99,7 @@ jobs:
           --id=${{ steps.project.outputs.id }}
 
       - name: Create PR Comment
-        if: steps.pull-request.outputs.pr_found == 'true'
+        if: steps.pull-request.outputs.pr_found == 'true' && failure() && steps.version-exists.outcome == 'failure'
         uses: actions-ecosystem/action-create-comment@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -109,7 +109,7 @@ jobs:
             :books: [Watch Docs](https://balance-test.readme.io/${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}/reference).
 
       - name: Add Github Check
-        if: steps.pull-request.outputs.pr_found == 'true'
+        if: steps.pull-request.outputs.pr_found == 'true' && failure() && steps.version-exists.outcome == 'failure'
         uses: Sibz/github-status-action@v1
         with:
           authToken: ${{ secrets.GITHUB_TOKEN }}
