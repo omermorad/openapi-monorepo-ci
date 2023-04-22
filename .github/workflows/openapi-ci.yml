@@ -53,13 +53,13 @@ jobs:
         run: yarn lerna run build
 
       - name: Readme.io - Check for Existing Version
-        uses: readmeio/rdme@v8
         id: existing
-        with:
-          rdme: versions \
-            --key=${{ secrets.READMEIO_API_KEY }} \
-            --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}) \
-            --raw
+        run: |
+          response=$(curl https://dash.readme.com/api/v1/version/${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
+          -X GET \
+          -u "${{ secrets.READMEIO_API_KEY }}:")
+
+          echo info=$response >> $GITHUB_OUTPUT
 
       - name: Readme.io - Get Project ID
         id: project
