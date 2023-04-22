@@ -17,7 +17,6 @@ jobs:
       - name: Boostrap Yarn / Lerna
         run: |
           yarn --frozen-lockfile
-          yarn add -W rdme
           lerna bootstrap --ci
 
       - uses: 8BitJonny/gh-get-current-pr@2.2.0
@@ -54,12 +53,14 @@ jobs:
         run: yarn lerna run build
 
       - name: Readme.io - Check for Existing Version
-        continue-on-error: true
+        uses: readmeio/rdme@v8
         id: existing
-        run: |
-          response=$(yarn --silent rdme versions \
+        with:
+          rdme: |
+          versions \
           --key=${{ secrets.READMEIO_API_KEY }} \
-          --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }})
+          --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}) \
+          --raw
 
           echo info=$response >> $GITHUB_OUTPUT
 
