@@ -70,7 +70,7 @@ jobs:
 
       - name: Readme.io - Sync OpenAPI Spec
         run: |
-          yarn rdme openapi ./server/openapi/dist/openapi.json \
+          yarn rdme openapi ./openapi/packages/openapi/dist/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }} \
           --key=${{ secrets.READMEIO_API_KEY }} \
           --create

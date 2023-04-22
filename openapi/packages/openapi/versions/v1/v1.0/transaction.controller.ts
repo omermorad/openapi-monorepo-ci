@@ -13,7 +13,7 @@ class TransactionResponseSchema implements Transaction.TransactionResponseSchema
 export class TransactionController {
   @Get('/:transactionId')
   @ApiOperation({
-    description: 'Returns the details of a transaction entity.',
+    description: 'Returns the details of a transaction entity and something else.',
     operationId: 'transaction.crud.get-transaction',
   })
   @ApiParam({
