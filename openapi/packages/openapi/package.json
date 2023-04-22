@@ -18,7 +18,7 @@
     "rxjs": "^7.1.0"
   },
   "devDependencies": {
-    "@omermorad/openapi.types": "0.0.0",
+    "@omermorad/openapi.types": "^0.0.0",
     "ts-node": "^8.10.1",
     "typescript": "^4.4.4"
   },
