@@ -42,12 +42,11 @@ jobs:
 
           git checkout master
 
-          npx lerna version \
-          --yes --preid next \
-          --conventional-commits \
-          --conventional-prerelease \
+          yarn lerna version minor \
+          --yes \
           --no-push \
-          --no-git-tag-version
+          --no-git-tag-version \
+          --allow-branch ${{ github.head_ref }}
 
       - name: Get Lerna Next Version
         id: lerna-next
@@ -62,11 +61,11 @@ jobs:
         id: version-exists
         run: |
           echo "info=$(yarn rdme versions \
-          --key=${{ secrets.READMEIO_API_KEY_DEV }} \
+          --key=${{ secrets.READMEIO_API_KEY }} \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }})" >> $GITHUB_OUTPUT
 
           yarn rdme versions \
-          --key=${{ secrets.READMEIO_API_KEY_DEV }} \
+          --key=${{ secrets.READMEIO_API_KEY }} \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}
 
       - name: Readme.io - Create Version
@@ -85,7 +84,7 @@ jobs:
         run: |
           yarn rdme openapi ./server/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
-          --key=${{ secrets.READMEIO_API_KEY_DEV }} \
+          --key=${{ secrets.READMEIO_API_KEY }} \
           --create
 
       - name: Readme.io - Get Project ID
@@ -99,7 +98,7 @@ jobs:
         run: |
           yarn rdme openapi ./server/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
-          --key=${{ secrets.READMEIO_API_KEY_DEV }} \
+          --key=${{ secrets.READMEIO_API_KEY }} \
           --id=${{ steps.project.outputs.id }}
 
       - name: Create PR Comment
