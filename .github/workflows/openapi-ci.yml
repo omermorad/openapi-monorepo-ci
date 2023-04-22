@@ -57,14 +57,12 @@ jobs:
         continue-on-error: true
         id: version-exists
         run: |
-          echo "info=$(yarn rdme versions \
-          --key=${{ secrets.READMEIO_API_KEY }} \
-          --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }})" >> $GITHUB_OUTPUT
-
           yarn rdme versions \
           --key=${{ secrets.READMEIO_API_KEY }} \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}
 
+          echo "info=$(yarn rdme versions --key=${{ secrets.READMEIO_API_KEY }} --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }})" >> $GITHUB_OUTPUT
+x
       - name: Readme.io - Create Version
         if: failure() && steps.version-exists.outcome == 'failure'
         run: |
