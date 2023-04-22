@@ -57,10 +57,10 @@ jobs:
         id: existing
         with:
           rdme: |
-          versions \
-          --key=${{ secrets.READMEIO_API_KEY }} \
-          --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}) \
-          --raw
+            versions \
+            --key=${{ secrets.READMEIO_API_KEY }} \
+            --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}) \
+            --raw
 
           echo info=$response >> $GITHUB_OUTPUT
 
