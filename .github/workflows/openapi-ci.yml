@@ -65,7 +65,7 @@ jobs:
       - name: Readme.io - Create Version
         if: steps.project.outputs.id == ''
         run: |
-          yarn rdme versions:create ${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
+          npx rdme versions:create ${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --main=false \
           --beta=false \
           --isPublic=false \
@@ -76,7 +76,7 @@ jobs:
       - name: Readme.io - Create OpenAPI Spec
         if: steps.project.outputs.id == ''
         run: |
-          yarn rdme openapi ./openapi/packages/openapi/openapi.json \
+          npx rdme openapi ./openapi/packages/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --key=${{ secrets.READMEIO_API_KEY }} \
           --create
@@ -84,7 +84,7 @@ jobs:
       - name: Readme.io - Update OpenAPI Spec
         if: steps.project.outputs.id != ''
         run: |
-          yarn rdme openapi ./openapi/packages/openapi/openapi.json \
+          npx rdme openapi ./openapi/packages/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --key=${{ secrets.READMEIO_API_KEY }} \
           --id=${{ steps.project.outputs.id }}
