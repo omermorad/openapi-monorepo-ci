@@ -57,11 +57,17 @@ jobs:
         continue-on-error: true
         id: version-exists
         run: |
-          yarn rdme versions \
+          yarn --silent rdme versions \
           --key=${{ secrets.READMEIO_API_KEY }} \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}
 
-          echo "info=$(yarn rdme versions --key=${{ secrets.READMEIO_API_KEY }} --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }})" >> $GITHUB_OUTPUT
+          echo "info=$(yarn --silent rdme versions --key=${{ secrets.READMEIO_API_KEY }} --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }})" >> $GITHUB_OUTPUT
+
+      - name: Readme.io - Get Project ID
+        if: success() && steps.version-exists.outcome == 'success'
+        id: project
+        run: |
+          echo "id=$(fromJson(steps.version-exists.outputs.info)._id)" >> $GITHUB_OUTPUT
 
       - name: Readme.io - Create Version
         if: failure() && steps.version-exists.outcome == 'failure'
@@ -81,12 +87,6 @@ jobs:
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --key=${{ secrets.READMEIO_API_KEY }} \
           --create
-
-      - name: Readme.io - Get Project ID
-        if: success() && steps.version-exists.outcome == 'success'
-        id: project
-        run: |
-          echo "id=$(fromJson(steps.version-exists.outputs.info)._id)" >> $GITHUB_OUTPUT
 
       - name: Readme.io - Update OpenAPI Spec
         if: success() && steps.version-exists.outcome == 'success'
