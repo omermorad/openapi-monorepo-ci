@@ -12,6 +12,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: 'yarn'
+          version: '16.x.x'
 
       - name: Boostrap Yarn / Lerna
         run: |
