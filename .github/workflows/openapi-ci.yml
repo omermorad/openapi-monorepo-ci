@@ -53,20 +53,17 @@ jobs:
         run: yarn lerna run build
 
       - name: Readme.io - Check for Existing Version
-        id: existing
         run: |
-          response=$(curl https://dash.readme.com/api/v1/version/${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
+          curl https://dash.readme.com/api/v1/version/${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           -X GET \
-          -u "${{ secrets.READMEIO_API_KEY }}:")
-
-          echo info=$response >> $GITHUB_OUTPUT
+          -u "${{ secrets.READMEIO_API_KEY }}:" > response.json
 
       - name: Readme.io - Get Project ID
         id: project
-        run: echo "id=$(fromJson(${{ steps.existing.outputs.info }})._id)" >> $GITHUB_OUTPUT
+        run: echo "id=$(jq '._id' response.json)" >> $GITHUB_OUTPUT
 
       - name: Readme.io - Create Version
-        if: failure() && steps.version-exists.outcome == 'failure'
+        if: steps.project.outputs.id == ''
         run: |
           yarn rdme versions:create ${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --main=false \
@@ -77,7 +74,7 @@ jobs:
           --fork=${{ steps.lerna-current.outputs.version }}
 
       - name: Readme.io - Create OpenAPI Spec
-        if: failure() && steps.version-exists.outcome == 'failure'
+        if: steps.project.outputs.id == ''
         run: |
           yarn rdme openapi ./openapi/packages/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
@@ -85,7 +82,7 @@ jobs:
           --create
 
       - name: Readme.io - Update OpenAPI Spec
-        if: success() && steps.version-exists.outcome == 'success'
+        if: steps.project.outputs.id != ''
         run: |
           yarn rdme openapi ./openapi/packages/openapi/openapi.json \
           --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
