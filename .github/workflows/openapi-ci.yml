@@ -55,7 +55,7 @@ jobs:
 
       - name: Readme.io - Check for Existing Version
         continue-on-error: true
-        id: version-exists
+        id: existing
         run: |
           response=$(yarn --silent rdme versions \
           --key=${{ secrets.READMEIO_API_KEY }} \
@@ -64,9 +64,9 @@ jobs:
           echo info=$response >> $GITHUB_OUTPUT
 
       - name: Readme.io - Get Project ID
-        if: success() && steps.version-exists.outcome == 'success'
         id: project
         run: |
+          echo ${{ steps.existing.outputs.info }}
           echo "id=$(fromJson(steps.version-exists.outputs.info)._id)" >> $GITHUB_OUTPUT
 
       - name: Readme.io - Create Version
