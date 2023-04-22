@@ -60,11 +60,14 @@ jobs:
 
       - name: Readme.io - Get Project ID
         id: project
-        run: echo "id=$(jq '._id' response.json)" >> $GITHUB_OUTPUT
+        run: |
+          echo "id=$(jq '._id' response.json)" >> $GITHUB_OUTPUT
 
       - name: Readme.io - Create Version
         if: steps.project.outputs.id == ''
         run: |
+          echo ${{ steps.project.outputs.id }}
+          
           npx rdme versions:create ${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --main=false \
           --beta=false \
