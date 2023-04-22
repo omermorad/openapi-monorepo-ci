@@ -1,7 +1,7 @@
 {
   "name": "@omermorad/openapi",
   "license": "UNLICENSED",
-  "version": "1.1.0-next.1",
+  "version": "0.0.0",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "yarn ts-node -r tsconfig-paths/register build.ts"

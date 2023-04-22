@@ -1,8 +1,4 @@
-name: Release OpenAPI Next Version
-
-env:
-  NODE_ENV: 'development'
-  APPLICATION_MODE: 'api'
+name: OpenAPI - Publish Docs
 
 on:
   push:

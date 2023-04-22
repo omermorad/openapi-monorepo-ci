@@ -1,0 +1,96 @@
+name: Release OpenAPI
+
+env:
+  NODE_ENV: 'development'
+  APPLICATION_MODE: 'api'
+
+on: [workflow_dispatch]
+
+inputs:
+  target:
+    description: 'Target Release Branch'
+    required: true
+    type: string
+  release:
+    type: choice
+    description: Release Type
+    options:
+      - prerelease
+      - graduate
+
+jobs:
+  version-openapi:
+    name: Build & Preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Config Git User
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Yarn / Lerna
+        run: |
+          yarn --frozen-lockfile
+          yarn add -W -D rdme
+          lerna bootstrap --ci
+
+      - name: Build
+        run: yarn lerna run build --scope "@omermorad/openapi*"
+
+      - name: Get Lerna Current Version
+        id: lerna-current
+        run: |
+          echo "version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
+
+      - name: Version Prerelease
+        if: github.event.inputs.release == 'prerelease'
+        run: |
+          yarn lerna version \
+          --conventional-commits \
+          --yes \
+          --conventional-prerelease \
+          --preid rc \
+          --tag-version-prefix='openapi@'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Version Graduate
+        if: github.event.inputs.release == 'graduate'
+        run: |
+          yarn lerna version \
+          --conventional-commits \
+          --yes \
+          --conventional-graduate \
+          --create-release github \
+          --tag-version-prefix='openapi@'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lerna Version After Bump
+        id: lerna-next
+        run: |
+          echo "version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
+
+      - name: Readme.io - Create New Live Docs Version
+        run: |
+          yarn rdme versions:create ${{ steps.lerna-next.outputs.version }} \
+          --main=false \
+          --beta=false \
+          --isPublic=false \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --codename=${{ steps.lerna-next.outputs.version }} \
+          --fork=${{ steps.lerna-current.outputs.version }}
