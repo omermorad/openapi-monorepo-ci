@@ -1,0 +1,13 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start:dev": "yarn nest start --watch"
+  },
+  "dependencies": {
+    "@nestjs/cli": "^8.2.8",
+    "@nestjs/common": "^8.1.1",
+    "@nestjs/core": "^8.1.1"
+  }
+}

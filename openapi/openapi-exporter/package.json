@@ -1,0 +1,19 @@
+{
+  "name": "@openapi/exporter",
+  "version": "0.0.0",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "private": true,
+  "license": "UNLICENSED",
+  "files": [
+    "CHANGELOG.md",
+    "README.md",
+    "dist/**/*"
+  ],
+  "devDependencies": {
+    "@nestjs/common": "^8.1.1",
+    "@nestjs/core": "^8.1.1",
+    "@nestjs/swagger": "^5.1.1",
+    "typescript": "^4.4.4"
+  }
+}

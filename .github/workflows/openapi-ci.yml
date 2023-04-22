@@ -1,0 +1,98 @@
+name: OpenAPI
+on: [pull_request]
+jobs:
+  preview:
+    name: Build & Preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          node-version: '16.x.x'
+
+      - name: Boostrap Yarn / Lerna
+        run: |
+          yarn --frozen-lockfile
+          lerna bootstrap --ci
+
+      - uses: 8BitJonny/gh-get-current-pr@2.2.0
+        id: pull-request
+        with:
+          sha: ${{ github.head_ref }}
+
+      - name: Get Lerna Current Version
+        id: lerna-current
+        run: |
+          echo "version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
+
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Version Packages - Dry Run
+        run: |
+          git config --global user.email "${GITHUB_ACTOR}"
+          git config --global user.name "${GITHUB_ACTOR}@users.noreply.github.com"
+          git fetch origin master
+
+          git checkout master
+
+          npx lerna version \
+          --yes --preid next \
+          --conventional-commits \
+          --conventional-prerelease \
+          --no-push \
+          --no-git-tag-version
+
+      - name: Get Lerna Next Version
+        id: lerna-next
+        run: |
+          echo "version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
+
+      - name: Build OpenAPI Module
+        run: yarn lerna run build
+
+      - name: Install Readme CLI
+        run: yarn add -W rdme
+
+      - name: Readme.io - Create Version
+        run: |
+          yarn rdme versions:create ${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }} \
+          --main=false \
+          --beta=false \
+          --isPublic=false \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --codename=v${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }} \
+          --fork=${{ steps.lerna-current.outputs.version }}
+
+      - name: Readme.io - Sync OpenAPI Spec
+        run: |
+          yarn rdme openapi ./openapi/packages/openapi/dist/openapi.json \
+          --version=${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }} \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --create
+
+      - name: Create PR Comment
+        if: steps.pull-request.outputs.pr_found == 'true'
+        uses: actions-ecosystem/action-create-comment@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ steps.pull-request.outputs.number }}
+          body: |
+            *Readme.io docs preview environment is ready (v${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }})* \
+            :books: [Watch Docs](https://balance-test.readme.io/v${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }}/reference).
+
+      - name: Add Github Check
+        if: steps.pull-request.outputs.pr_found == 'true'
+        uses: Sibz/github-status-action@v1
+        with:
+          authToken: ${{ secrets.GITHUB_TOKEN }}
+          context: 'Readme.io'
+          description: '✅ OpenAPI docs preview environment is ready'
+          state: 'success'
+          sha: ${{ github.event.pull_request.head.sha || github.sha }}
+          target_url: https://balance-test.readme.io/v${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }}/reference
