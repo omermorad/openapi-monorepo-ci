@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          ref: ${{ github.head_ref }}
 
       - uses: actions/setup-node@v3
         with:
@@ -29,24 +29,16 @@ jobs:
         run: |
           echo "version=$(grep -m1 version lerna.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')" >> $GITHUB_OUTPUT
 
-      - name: Set outputs
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Version Packages - Dry Run
         run: |
           git config --global user.email "${GITHUB_ACTOR}"
           git config --global user.name "${GITHUB_ACTOR}@users.noreply.github.com"
-          git fetch origin master
 
-          git checkout master
-
-          npx lerna version \
-          --yes --preid next \
-          --conventional-commits \
-          --conventional-prerelease \
+          yarn lerna version minor \
+          --yes \
           --no-push \
-          --no-git-tag-version
+          --no-git-tag-version \
+          --allow-branch ${{ github.head_ref }}
 
       - name: Get Lerna Next Version
         id: lerna-next
@@ -56,35 +48,57 @@ jobs:
       - name: Build OpenAPI Module
         run: yarn lerna run build
 
-      - name: Install Readme CLI
-        run: yarn add -W rdme
+      - name: Readme.io - Check for Existing Version
+        run: |
+          curl https://dash.readme.com/api/v1/version/${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
+          -X GET \
+          -u "${{ secrets.READMEIO_API_KEY }}:" > response.json
+          
+          cat response.json
+
+      - name: Readme.io - Get Project ID
+        id: project
+        run: |
+          jq '._id' response.json
+
+          echo "id=$(jq '._id' response.json)" >> $GITHUB_OUTPUT
 
       - name: Readme.io - Create Version
-        run: |
-          yarn rdme versions:create ${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }} \
+        if: steps.project.outputs.id == null
+        run: |          
+          npx rdme versions:create ${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --main=false \
           --beta=false \
           --isPublic=false \
           --key=${{ secrets.READMEIO_API_KEY }} \
-          --codename=v${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }} \
+          --codename=${{ steps.lerna-next.outputs.version }}-pr#${{ steps.pull-request.outputs.number }} \
           --fork=${{ steps.lerna-current.outputs.version }}
 
-      - name: Readme.io - Sync OpenAPI Spec
+      - name: Readme.io - Create OpenAPI Spec
+        if: steps.project.outputs.id == null
         run: |
-          yarn rdme openapi ./openapi/packages/openapi/dist/openapi.json \
-          --version=${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }} \
+          npx rdme openapi ./openapi/packages/openapi/dist/openapi.json \
+          --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
           --key=${{ secrets.READMEIO_API_KEY }} \
           --create
 
+      - name: Readme.io - Update OpenAPI Spec
+        if: steps.project.outputs.id != null
+        run: |
+          npx rdme openapi ./openapi/packages/openapi/dist/openapi.json \
+          --key=${{ secrets.READMEIO_API_KEY }} \
+          --version=${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }} \
+          --id=${{ steps.project.outputs.id }}
+
       - name: Create PR Comment
-        if: steps.pull-request.outputs.pr_found == 'true'
+        if: steps.pull-request.outputs.pr_found == 'true' && steps.project.outputs.id == null
         uses: actions-ecosystem/action-create-comment@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.pull-request.outputs.number }}
           body: |
             *Readme.io docs preview environment is ready (v${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }})* \
-            :books: [Watch Docs](https://balance-test.readme.io/v${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }}/reference).
+            :books: [Watch Docs](https://balance-test.readme.io/${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}/reference).
 
       - name: Add Github Check
         if: steps.pull-request.outputs.pr_found == 'true'
@@ -95,4 +109,4 @@ jobs:
           description: '✅ OpenAPI docs preview environment is ready'
           state: 'success'
           sha: ${{ github.event.pull_request.head.sha || github.sha }}
-          target_url: https://balance-test.readme.io/v${{ steps.lerna-next.outputs.version }}-${{ steps.vars.outputs.sha_short }}/reference
+          target_url: https://balance-test.readme.io/${{ steps.lerna-next.outputs.version }}-rc.pr-${{ steps.pull-request.outputs.number }}/reference
